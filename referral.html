@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NΞXUS — Earn Daily</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --void:      #02040f;
+  --deep:      #050818;
+  --navy:      #08102a;
+  --panel:     #0c1538;
+  --card:      #101c44;
+  --card2:     #141f4a;
+  --rim:       rgba(70,120,255,.13);
+  --rim-pink:  rgba(236,72,153,.1);
+  --rim-glow:  rgba(59,130,246,.25);
+
+  --blue:      #3b82f6;
+  --blue2:     #60a5fa;
+  --blue3:     #93c5fd;
+  --indigo:    #6366f1;
+  --elec:      #4f7eff;
+
+  --pink:      #ec4899;
+  --pink2:     #f472b6;
+
+  --text:      #e8eeff;
+  --text2:     #8090b8;
+  --text3:     #3a4a72;
+
+  --sidebar-w: 260px;
+  --header-h:  64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--void);
+  color: var(--text);
+  height: 100%;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* ═══════════════════════════════════════
+   CANVAS BG
+═══════════════════════════════════════ */
+#bgc {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .6;
+}
+.grain {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: .4;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════ */
+.app-shell {
+  position: relative; z-index: 2;
+  display: flex; height: 100vh;
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  height: 100vh;
+  background: linear-gradient(180deg, rgba(8,16,42,.98) 0%, rgba(5,8,24,.98) 100%);
+  border-right: 1px solid var(--rim);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.sidebar::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 200px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,.12), transparent 70%);
+  pointer-events: none;
+}
+
+/* logo */
+.sb-logo {
+  padding: 22px 24px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--rim);
+}
+.sb-logo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue), var(--indigo));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 18px rgba(59,130,246,.4);
+}
+.sb-logo-icon i { color: #fff; font-size: 15px; }
+.sb-logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: .1em;
+  background: linear-gradient(120deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* user mini-card */
+.sb-user {
+  margin: 16px 16px 0;
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.sb-user:hover { background: var(--card2); }
+.sb-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 15px; color: #fff;
+  flex-shrink: 0;
+}
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-uname { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-utier {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--blue2); margin-top: 1px;
+}
+.sb-chevron { color: var(--text3); font-size: 11px; }
+
+/* nav */
+.sb-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+.sb-nav::-webkit-scrollbar { width: 0; }
+.sb-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--text3); padding: 10px 12px 6px;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all .18s;
+  margin-bottom: 2px; position: relative;
+}
+.sb-item i { width: 16px; text-align: center; font-size: 14px; }
+.sb-item:hover { background: rgba(59,130,246,.08); color: var(--text); }
+.sb-item.active {
+  background: rgba(59,130,246,.12);
+  color: var(--blue2);
+  border: 1px solid rgba(59,130,246,.18);
+}
+.sb-item.active i { color: var(--blue2); }
+.sb-item .sb-badge {
+  margin-left: auto;
+  background: var(--pink); color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  padding: 2px 7px; border-radius: 10px;
+}
+
+/* balance pill */
+.sb-balance {
+  margin: 0 16px 16px;
+  background: linear-gradient(135deg, rgba(59,130,246,.12), rgba(99,102,241,.08));
+  border: 1px solid rgba(59,130,246,.2);
+  border-radius: 12px; padding: 16px;
+  position: relative; overflow: hidden;
+}
+.sb-balance::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue2), transparent);
+}
+.sb-bal-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 4px;
+}
+.sb-bal-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px; letter-spacing: .04em;
+  background: linear-gradient(90deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+}
+.sb-bal-usd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text3); margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════ */
+.main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-width: 0;
+}
+
+/* header */
+.topbar {
+  height: var(--header-h);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--rim);
+  background: rgba(5,8,24,.8);
+  backdrop-filter: blur(20px);
+  display: flex; align-items: center;
+  padding: 0 32px; gap: 16px;
+}
+.topbar-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: .08em; color: var(--text);
+}
+.topbar-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text3);
+}
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.tb-streak {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(236,72,153,.08);
+  border: 1px solid rgba(236,72,153,.2);
+  border-radius: 20px; padding: 6px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .1em; color: var(--pink2);
+}
+.tb-streak i { color: var(--pink); font-size: 11px; }
+.tb-streak .s-count { font-family: 'Bebas Neue', sans-serif; font-size: 18px; line-height: 1; color: var(--pink2); }
+.tb-notif {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--card); border: 1px solid var(--rim);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; position: relative; transition: all .2s;
+  color: var(--text2); font-size: 14px;
+}
+.tb-notif:hover { background: var(--card2); color: var(--blue2); }
+.tb-notif .notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--pink); border: 1.5px solid var(--deep);
+}
+
+/* content scroll area */
+.content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 28px 32px;
+  scroll-behavior: smooth;
+}
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--rim); border-radius: 2px; }
+
+/* page panels */
+.page { display: none; }
+.page.active { display: block; animation: pageIn .3s ease; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ═══════════════════════════════════════
+   SECTION HELPERS
+═══════════════════════════════════════ */
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-title::before { content: ''; width: 20px; height: 1px; background: var(--blue); }
+
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 14px;
+  padding: 20px 22px;
+  position: relative; overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.3), 0 0 30px rgba(59,130,246,.08);
+}
+.stat-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--pink));
+  transform: scaleX(0); transition: transform .3s; transform-origin: left;
+}
+.stat-card:hover::after { transform: scaleX(1); }
+.sc-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; margin-bottom: 14px;
+  border: 1px solid;
+}
+.sc-icon.blue { background: rgba(59,130,246,.1); border-color: rgba(59,130,246,.2); color: var(--blue2); }
+.sc-icon.pink { background: rgba(236,72,153,.1); border-color: rgba(236,72,153,.2); color: var(--pink2); }
+.sc-icon.indigo { background: rgba(99,102,241,.1); border-color: rgba(99,102,241,.2); color: #a5b4fc; }
+.sc-icon.teal { background: rgba(20,184,166,.1); border-color: rgba(20,184,166,.2); color: #5eead4; }
+.sc-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px; letter-spacing: .04em; line-height: 1;
+  background: linear-gradient(120deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.sc-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); margin-top: 4px; }
+.sc-delta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--blue2); margin-top: 5px; }
+.sc-delta.neg { color: var(--pink2); }
+
+/* ─── DAILY CLAIM CARD ─── */
+.claim-card {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 16px;
+  padding: 24px 28px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 28px;
+  margin-bottom: 24px;
+}
+.claim-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 0% 50%, rgba(59,130,246,.1), transparent 50%),
+              radial-gradient(ellipse at 100% 50%, rgba(236,72,153,.07), transparent 50%);
+  pointer-events: none;
+}
+.claim-top-line {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--indigo) 50%, var(--pink));
+}
+.claim-info { flex: 1; position: relative; z-index: 1; }
+.claim-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--pink2); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 7px;
+}
+.claim-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pink); animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.1;} }
+.claim-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; letter-spacing: .06em; color: var(--text);
+  margin-bottom: 4px;
+}
+.claim-sub { font-size: 13px; font-weight: 300; color: var(--text2); }
+.claim-reward {
+  display: flex; align-items: baseline; gap: 6px;
+  margin-top: 12px;
+}
+.claim-reward-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px; letter-spacing: .04em; line-height: 1;
+  background: linear-gradient(135deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.claim-reward-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: .16em; color: var(--text3);
+}
+.claim-streak-info {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text3); margin-top: 6px;
+}
+.claim-streak-info span { color: var(--blue2); }
+
+/* claim button */
+.claim-btn {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; min-width: 160px; padding: 20px 28px;
+  background: linear-gradient(135deg, var(--blue), var(--indigo) 55%, var(--pink));
+  border: none; border-radius: 12px; cursor: pointer;
+  color: #fff; position: relative; z-index: 1;
+  box-shadow: 0 0 40px rgba(59,130,246,.35), 0 0 80px rgba(59,130,246,.1);
+  transition: transform .25s cubic-bezier(.22,.68,0,1.2), box-shadow .25s;
+}
+.claim-btn::before {
+  content: ''; position: absolute; inset: 0; border-radius: 12px;
+  background: linear-gradient(170deg, rgba(255,255,255,.14), transparent 52%);
+}
+.claim-btn::after {
+  content: ''; position: absolute; top: -50%; left: -70%; width: 36%; height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+  transform: skewX(-18deg); transition: left .55s;
+}
+.claim-btn:hover { transform: scale(1.05); box-shadow: 0 0 60px rgba(59,130,246,.5), 0 0 120px rgba(236,72,153,.18); }
+.claim-btn:hover::after { left: 130%; }
+.claim-btn:active { transform: scale(.98); }
+.claim-btn.claimed {
+  background: rgba(59,130,246,.1);
+  border: 1px solid rgba(59,130,246,.2);
+  box-shadow: none; cursor: not-allowed; color: var(--text2);
+}
+.claim-btn.claimed:hover { transform: none; box-shadow: none; }
+.claim-btn-main { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: .1em; position: relative; z-index: 1; }
+.claim-btn-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .14em; opacity: .7; position: relative; z-index: 1; }
+
+/* countdown ring */
+.claim-timer {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: relative; z-index: 1;
+}
+.timer-ring { width: 64px; height: 64px; position: relative; }
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring-track { fill: none; stroke: rgba(255,255,255,.05); stroke-width: 4; }
+.timer-ring-fill { fill: none; stroke: url(#timerGrad); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.timer-h { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: .04em; color: var(--text); line-height: 1; }
+.timer-lbl { font-family: 'JetBrains Mono', monospace; font-size: 7px; letter-spacing: .14em; color: var(--text3); }
+
+/* ─── STREAK CALENDAR ─── */
+.streak-calendar {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 14px; padding: 20px 22px;
+}
+.streak-days { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.streak-day {
+  width: 38px; height: 38px; border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; border: 1px solid var(--rim);
+  background: rgba(255,255,255,.02);
+  font-family: 'JetBrains Mono', monospace; font-size: 8px;
+  letter-spacing: .1em; color: var(--text3);
+  transition: all .2s; cursor: default;
+}
+.streak-day.done {
+  background: rgba(59,130,246,.12);
+  border-color: rgba(59,130,246,.25);
+  color: var(--blue2);
+}
+.streak-day.today {
+  background: linear-gradient(135deg, rgba(59,130,246,.2), rgba(236,72,153,.12));
+  border-color: var(--blue);
+  color: var(--text);
+  box-shadow: 0 0 14px rgba(59,130,246,.25);
+}
+.streak-day.missed {
+  background: rgba(236,72,153,.05);
+  border-color: rgba(236,72,153,.1);
+  color: var(--text3);
+}
+.streak-day i { font-size: 11px; }
+.streak-day span { font-size: 7px; }
+
+/* ─── REFERRAL PANEL ─── */
+.ref-hero {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 16px;
+  padding: 28px 32px;
+  position: relative; overflow: hidden;
+  margin-bottom: 24px;
+}
+.ref-hero::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,.12), transparent 65%);
+  pointer-events: none;
+}
+.ref-hero-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.ref-hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px; letter-spacing: .05em; line-height: 1;
+  color: var(--text);
+}
+.ref-hero-title span {
+  background: linear-gradient(90deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.ref-hero-sub { font-size: 14px; font-weight: 300; color: var(--text2); line-height: 1.6; max-width: 420px; margin-top: 6px; }
+
+/* referral code box */
+.ref-code-section { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.ref-code-box { flex: 1; min-width: 280px; }
+.ref-code-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 8px;
+}
+.ref-code-display {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.25);
+  border-radius: 10px; overflow: hidden;
+}
+.ref-code-val {
+  flex: 1; padding: 14px 18px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; letter-spacing: .14em;
+  background: linear-gradient(90deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.ref-copy-btn {
+  padding: 14px 18px;
+  background: rgba(59,130,246,.12);
+  border: none; border-left: 1px solid rgba(59,130,246,.2);
+  color: var(--blue2); font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; gap: 7px;
+}
+.ref-copy-btn:hover { background: rgba(59,130,246,.22); color: #fff; }
+
+.ref-link-row {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(255,255,255,.03); border: 1px solid var(--rim);
+  border-radius: 8px; overflow: hidden; margin-top: 10px;
+}
+.ref-link-val {
+  flex: 1; padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ref-link-copy {
+  padding: 10px 14px;
+  background: none; border: none; border-left: 1px solid var(--rim);
+  color: var(--text3); cursor: pointer; font-size: 12px;
+  transition: color .2s;
+}
+.ref-link-copy:hover { color: var(--blue2); }
+
+/* share buttons */
+.ref-share { flex: 0 0 auto; }
+.ref-share-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 8px;
+}
+.ref-share-btns { display: flex; gap: 8px; }
+.share-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  border: 1px solid; cursor: pointer; transition: all .2s;
+}
+.share-btn.tw { background: rgba(29,161,242,.08); border-color: rgba(29,161,242,.2); color: #60bfff; }
+.share-btn.tw:hover { background: rgba(29,161,242,.18); }
+.share-btn.tg { background: rgba(0,136,204,.08); border-color: rgba(0,136,204,.2); color: #60c8ff; }
+.share-btn.tg:hover { background: rgba(0,136,204,.18); }
+
+/* ─── REFERRAL STATS ─── */
+.ref-stats {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+  margin-top: 20px;
+}
+.ref-stat {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--rim); border-radius: 10px;
+  padding: 14px 16px; text-align: center;
+}
+.rs-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; letter-spacing: .04em;
+  background: linear-gradient(120deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.rs-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--text3); margin-top: 3px;
+}
+
+/* ─── REFERRAL TABLE ─── */
+.ref-table {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 14px; overflow: hidden;
+}
+.rt-header {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--rim);
+  background: rgba(255,255,255,.02);
+}
+.rt-header span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text3);
+}
+.rt-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  padding: 14px 20px; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  transition: background .18s;
+}
+.rt-row:last-child { border-bottom: none; }
+.rt-row:hover { background: rgba(59,130,246,.04); }
+.rt-user { display: flex; align-items: center; gap: 10px; }
+.rt-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.rt-uname { font-size: 13px; font-weight: 500; color: var(--text); }
+.rt-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text3);
+}
+.rt-tier {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 3px;
+  display: inline-flex;
+}
+.rt-tier.stellar { background: rgba(59,130,246,.1); color: var(--blue2); border: 1px solid rgba(59,130,246,.18); }
+.rt-tier.charged { background: rgba(99,102,241,.1); color: #a5b4fc; border: 1px solid rgba(99,102,241,.18); }
+.rt-tier.seedling { background: rgba(20,184,166,.08); color: #5eead4; border: 1px solid rgba(20,184,166,.15); }
+.rt-earned {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500; color: var(--blue2);
+}
+.rt-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+}
+.rt-status .dot { width: 5px; height: 5px; border-radius: 50%; }
+.rt-status.active .dot { background: var(--blue2); box-shadow: 0 0 5px var(--blue); }
+.rt-status.active { color: var(--blue2); }
+.rt-status.pending .dot { background: var(--pink2); }
+.rt-status.pending { color: var(--pink2); }
+
+/* ─── HOW REFERRAL WORKS ─── */
+.how-steps {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 2px;
+  border: 1px solid var(--rim); border-radius: 12px; overflow: hidden;
+  margin-top: 6px;
+}
+.hs-card {
+  background: var(--panel); padding: 24px 20px;
+  position: relative; overflow: hidden; transition: background .2s;
+}
+.hs-card:hover { background: var(--card); }
+.hs-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue) 50%, var(--pink), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.hs-card:hover::before { opacity: 1; }
+.hs-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px; letter-spacing: .04em;
+  color: rgba(59,130,246,.08); line-height: 1; margin-bottom: 14px;
+  position: relative;
+}
+.hs-num::after {
+  content: attr(data-n); position: absolute; left: 0; top: 0;
+  background: linear-gradient(120deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  opacity: 0; transition: opacity .3s;
+}
+.hs-card:hover .hs-num::after { opacity: 1; }
+.hs-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; margin-bottom: 14px; border: 1px solid;
+  transition: all .2s;
+}
+.hs-icon.b { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.18); color: var(--blue2); }
+.hs-icon.p { background: rgba(236,72,153,.08); border-color: rgba(236,72,153,.15); color: var(--pink2); }
+.hs-icon.i { background: rgba(99,102,241,.08); border-color: rgba(99,102,241,.15); color: #a5b4fc; }
+.hs-card:hover .hs-icon.b { background: rgba(59,130,246,.16); }
+.hs-card:hover .hs-icon.p { background: rgba(236,72,153,.16); }
+.hs-card:hover .hs-icon.i { background: rgba(99,102,241,.16); }
+.hs-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.hs-desc { font-size: 12px; font-weight: 300; color: var(--text2); line-height: 1.6; }
+.hs-reward {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 12px; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .1em;
+  color: var(--blue2); background: rgba(59,130,246,.08);
+  padding: 4px 10px; border-radius: 3px; border: 1px solid rgba(59,130,246,.15);
+}
+.hs-reward.pk { color: var(--pink2); background: rgba(236,72,153,.08); border-color: rgba(236,72,153,.12); }
+
+/* ─── LEADERBOARD ─── */
+.leaderboard {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 14px; overflow: hidden;
+}
+.lb-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 20px; border-bottom: 1px solid rgba(255,255,255,.03);
+  transition: background .18s; cursor: default;
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: rgba(59,130,246,.04); }
+.lb-row.me { background: rgba(59,130,246,.07); border-color: rgba(59,130,246,.15); }
+.lb-rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: .04em;
+  min-width: 32px; text-align: center;
+}
+.lb-rank.r1 { color: #fbbf24; }
+.lb-rank.r2 { color: var(--text2); }
+.lb-rank.r3 { color: #f97316; }
+.lb-rank.rx { color: var(--text3); font-size: 16px; }
+.lb-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.lb-info { flex: 1; }
+.lb-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.lb-refs { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
+.lb-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: .04em;
+  background: linear-gradient(90deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.lb-bar-wrap { width: 80px; height: 4px; background: rgba(255,255,255,.05); border-radius: 2px; overflow: hidden; }
+.lb-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--pink)); }
+
+/* ─── EARNINGS HISTORY ─── */
+.history-list { display: flex; flex-direction: column; gap: 0; }
+.history-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.history-item:last-child { border-bottom: none; }
+.h-ico {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; border: 1px solid;
+}
+.h-ico.b { background: rgba(59,130,246,.1); border-color: rgba(59,130,246,.18); color: var(--blue2); }
+.h-ico.p { background: rgba(236,72,153,.1); border-color: rgba(236,72,153,.15); color: var(--pink2); }
+.h-ico.i { background: rgba(99,102,241,.1); border-color: rgba(99,102,241,.18); color: #a5b4fc; }
+.h-info { flex: 1; }
+.h-type { font-size: 13px; font-weight: 500; color: var(--text); }
+.h-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
+.h-amt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 500;
+}
+.h-amt.plus { color: var(--blue2); }
+.h-amt.pink { color: var(--pink2); }
+
+/* ─── REWARD TIERS ─── */
+.tier-cards {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+  margin-top: 6px;
+}
+.tier-c {
+  background: var(--card); border: 1px solid var(--rim);
+  border-radius: 12px; padding: 20px 18px; text-align: center;
+  transition: transform .2s, box-shadow .2s; cursor: default;
+}
+.tier-c:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,.3), 0 0 24px rgba(59,130,246,.08); }
+.tier-c.active-tier {
+  border-color: rgba(59,130,246,.35);
+  background: linear-gradient(160deg, rgba(59,130,246,.08), rgba(99,102,241,.04));
+  box-shadow: 0 0 24px rgba(59,130,246,.1);
+}
+.tier-c .t-ico { font-size: 26px; margin-bottom: 10px; color: var(--blue2); }
+.tier-c .t-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: .06em; color: var(--text); margin-bottom: 4px; }
+.tier-c .t-daily {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: .04em;
+  background: linear-gradient(120deg, var(--blue2), var(--pink2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+}
+.tier-c .t-unit { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; }
+.tier-c .t-perks { font-size: 11.5px; font-weight: 300; color: var(--text2); line-height: 1.7; }
+.tier-c .t-req { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-top: 10px; }
+.tier-c .t-progress { margin-top: 10px; }
+.tier-progress-track { height: 4px; background: rgba(255,255,255,.05); border-radius: 2px; overflow: hidden; }
+.tier-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--pink)); }
+
+/* ─── TOAST ─── */
+.toast-stack {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9000;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.toast-item {
+  background: var(--card2);
+  border: 1px solid rgba(59,130,246,.25);
+  border-radius: 10px; padding: 13px 18px;
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,.5), 0 0 24px rgba(59,130,246,.08);
+  min-width: 280px; max-width: 340px; position: relative;
+  transform: translateX(120%); transition: transform .35s cubic-bezier(.22,.68,0,1.2);
+}
+.toast-item.show { transform: translateX(0); }
+.toast-item.leaving { transform: translateX(120%); transition: transform .28s ease-in; }
+.ti-icon { font-size: 16px; flex-shrink: 0; color: var(--blue2); }
+.ti-text { flex: 1; line-height: 1.5; }
+.ti-bar {
+  position: absolute; bottom: 0; left: 0; height: 2px; border-radius: 0 0 10px 10px;
+  background: linear-gradient(90deg, var(--blue), var(--pink));
+  width: 100%; transform-origin: left;
+}
+.toast-item.show .ti-bar { animation: drain 3.5s linear forwards; }
+@keyframes drain { from{transform:scaleX(1);} to{transform:scaleX(0);} }
+
+/* ─── BURST ─── */
+.burst-dot {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 8000;
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(2,4,15,.8); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--panel); border: 1px solid rgba(59,130,246,.2);
+  border-radius: 18px; padding: 36px 40px;
+  min-width: 400px; max-width: 520px; width: 90%;
+  position: relative; overflow: hidden;
+  transform: scale(.94) translateY(20px);
+  transition: transform .3s cubic-bezier(.22,.68,0,1.2);
+}
+.modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+.modal-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--indigo) 50%, var(--pink));
+}
+.modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: .06em; color: var(--text); margin-bottom: 8px; }
+.modal-sub { font-size: 14px; font-weight: 300; color: var(--text2); line-height: 1.7; margin-bottom: 28px; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 30px; height: 30px; border-radius: 6px;
+  background: rgba(255,255,255,.05); border: 1px solid var(--rim);
+  color: var(--text2); font-size: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.modal-close:hover { background: rgba(236,72,153,.1); color: var(--pink2); border-color: rgba(236,72,153,.2); }
+
+/* input */
+.m-input-group { margin-bottom: 16px; }
+.m-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; }
+.m-input {
+  width: 100%; background: rgba(8,16,42,.9);
+  border: 1px solid var(--rim); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: var(--text); padding: 13px 16px; outline: none;
+  transition: border-color .2s;
+}
+.m-input:focus { border-color: rgba(59,130,246,.45); }
+.m-input::placeholder { color: var(--text3); }
+
+/* primary btn */
+.btn-primary {
+  position: relative; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: linear-gradient(135deg, var(--blue), var(--indigo) 55%, var(--pink));
+  border: none; border-radius: 9px; padding: 13px 28px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #fff; cursor: pointer;
+  box-shadow: 0 0 30px rgba(59,130,246,.28);
+  transition: transform .22s cubic-bezier(.22,.68,0,1.2), box-shadow .22s;
+  width: 100%;
+}
+.btn-primary::before {
+  content: ''; position: absolute; inset: 0; border-radius: 9px;
+  background: linear-gradient(170deg, rgba(255,255,255,.14), transparent 52%);
+}
+.btn-primary:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 0 50px rgba(59,130,246,.45); }
+.btn-primary:active { transform: scale(.98); }
+
+/* ─── ONBOARDING ─── */
+.onboard-overlay {
+  position: fixed; inset: 0; z-index: 800;
+  background: var(--void);
+  display: flex; align-items: center; justify-content: center;
+}
+.onboard-box {
+  background: var(--panel);
+  border: 1px solid rgba(59,130,246,.2);
+  border-radius: 20px; padding: 48px 52px;
+  width: 480px; position: relative; overflow: hidden;
+  animation: fadeUp .6s cubic-bezier(.22,.68,0,1.2) both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(40px);} to{opacity:1;transform:none;} }
+.onboard-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--indigo) 50%, var(--pink));
+}
+.onboard-logo {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+}
+.ob-logo-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue), var(--indigo));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 24px rgba(59,130,246,.45);
+}
+.ob-logo-icon i { color: #fff; font-size: 18px; }
+.ob-logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: .1em; background: linear-gradient(120deg, var(--blue2), var(--pink2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.ob-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: .04em; color: var(--text); line-height: 1; margin-bottom: 8px; }
+.ob-sub { font-size: 14px; font-weight: 300; color: var(--text2); line-height: 1.75; margin-bottom: 32px; }
+.ob-steps { display: flex; gap: 6px; margin-bottom: 32px; }
+.ob-step {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,.06);
+}
+.ob-step.done { background: linear-gradient(90deg, var(--blue), var(--indigo)); }
+.ob-step.active { background: linear-gradient(90deg, var(--blue), var(--pink)); }
+</style>
+</head>
+<body>
+
+<canvas id="bgc"></canvas>
+<div class="grain"></div>
+
+<!-- ═══════════ ONBOARDING ═══════════ -->
+<div class="onboard-overlay" id="onboardOverlay">
+  <div class="onboard-box">
+    <div class="onboard-logo">
+      <div class="ob-logo-icon"><i class="fa-solid fa-hexagon-nodes"></i></div>
+      <div class="ob-logo-text">NΞXUS</div>
+    </div>
+    <div class="ob-steps" id="obSteps">
+      <div class="ob-step active"></div>
+      <div class="ob-step"></div>
+      <div class="ob-step"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div id="obStep1">
+      <div class="ob-title">Welcome to<br>NΞXUS</div>
+      <p class="ob-sub">Earn <strong style="color:var(--blue2)">NXS tokens</strong> every day — just by logging in, completing tasks, and referring friends. Your first reward is waiting.</p>
+      <div class="m-input-group">
+        <div class="m-lbl">Your Name</div>
+        <input class="m-input" id="obName" placeholder="Enter your display name" />
+      </div>
+      <div class="m-input-group">
+        <div class="m-lbl">Email Address</div>
+        <input class="m-input" id="obEmail" placeholder="your@email.com" type="email"/>
+      </div>
+      <div class="m-input-group">
+        <div class="m-lbl">Referral Code <span style="color:var(--text3);font-size:9px;">(optional)</span></div>
+        <input class="m-input" id="obRef" placeholder="Enter referral code for bonus NXS" />
+      </div>
+      <button class="btn-primary" onclick="obNext(2)"><i class="fa-solid fa-arrow-right"></i> Create Account</button>
+    </div>
+
+    <!-- Step 2 (hidden) -->
+    <div id="obStep2" style="display:none">
+      <div class="ob-title">Connect<br>Your Wallet</div>
+      <p class="ob-sub">Link an Ethereum wallet to receive your NXS token rewards. Non-custodial — you stay in control.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <button onclick="obSelectWallet(this,'MetaMask')" class="wallet-opt" style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(59,130,246,.06);border:1px solid var(--rim);border-radius:10px;cursor:pointer;color:var(--text);font-size:13px;font-weight:500;transition:all .2s;">
+          <i class="fa-solid fa-wallet" style="color:var(--blue2);font-size:18px;width:24px;text-align:center;"></i> MetaMask
+          <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);">RECOMMENDED</span>
+        </button>
+        <button onclick="obSelectWallet(this,'WalletConnect')" class="wallet-opt" style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(59,130,246,.06);border:1px solid var(--rim);border-radius:10px;cursor:pointer;color:var(--text);font-size:13px;font-weight:500;transition:all .2s;">
+          <i class="fa-solid fa-qrcode" style="color:var(--indigo);font-size:18px;width:24px;text-align:center;"></i> WalletConnect
+        </button>
+        <button onclick="obSelectWallet(this,'Coinbase')" class="wallet-opt" style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(59,130,246,.06);border:1px solid var(--rim);border-radius:10px;cursor:pointer;color:var(--text);font-size:13px;font-weight:500;transition:all .2s;">
+          <i class="fa-solid fa-coins" style="color:var(--pink2);font-size:18px;width:24px;text-align:center;"></i> Coinbase Wallet
+        </button>
+      </div>
+      <button class="btn-primary" id="obWalletBtn" disabled style="opacity:.5;" onclick="obNext(3)"><i class="fa-solid fa-link"></i> Connect & Continue</button>
+    </div>
+
+    <!-- Step 3 (hidden) -->
+    <div id="obStep3" style="display:none">
+      <div class="ob-title">You're All<br>Set!</div>
+      <p class="ob-sub">Your account is ready. Your <strong style="color:var(--blue2)">daily reward clock</strong> starts now — don't miss a day or your streak resets!</p>
+      <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);border-radius:10px;padding:18px;margin-bottom:24px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Welcome Bonus</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.04em;background:linear-gradient(90deg,var(--blue2),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">+500 NXS</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">Credited to your account</div>
+      </div>
+      <button class="btn-primary" onclick="launchApp()"><i class="fa-solid fa-rocket"></i> Enter NΞXUS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN APP ═══════════ -->
+<div class="app-shell" id="appShell" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon"><i class="fa-solid fa-hexagon-nodes"></i></div>
+      <div class="sb-logo-text">NΞXUS</div>
+    </div>
+
+    <div class="sb-user" onclick="navigate('profile')">
+      <div class="sb-avatar" id="sbAvatar">A</div>
+      <div class="sb-user-info">
+        <div class="sb-uname" id="sbUname">Alex Chen</div>
+        <div class="sb-utier" id="sbTier">Stellar Tier</div>
+      </div>
+      <i class="fa-solid fa-chevron-right sb-chevron"></i>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section-label">Main</div>
+      <div class="sb-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </div>
+      <div class="sb-item" onclick="navigate('referrals')" id="nav-referrals">
+        <i class="fa-solid fa-user-group"></i> Referrals
+        <span class="sb-badge" id="refBadge">3</span>
+      </div>
+      <div class="sb-item" onclick="navigate('earn')" id="nav-earn">
+        <i class="fa-solid fa-bolt"></i> Earn
+      </div>
+      <div class="sb-item" onclick="navigate('leaderboard')" id="nav-leaderboard">
+        <i class="fa-solid fa-trophy"></i> Leaderboard
+      </div>
+      <div class="sb-section-label">Account</div>
+      <div class="sb-item" onclick="navigate('rewards')" id="nav-rewards">
+        <i class="fa-solid fa-gem"></i> Rewards
+      </div>
+      <div class="sb-item" onclick="navigate('profile')" id="nav-profile">
+        <i class="fa-solid fa-circle-user"></i> Profile
+      </div>
+      <div class="sb-item" onclick="navigate('settings')" id="nav-settings">
+        <i class="fa-solid fa-gear"></i> Settings
+      </div>
+    </nav>
+
+    <div class="sb-balance">
+      <div class="sb-bal-lbl">Total Balance</div>
+      <div class="sb-bal-val" id="sbBalance">3,347</div>
+      <div class="sb-bal-usd" id="sbUsd">≈ $167.35 USD</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-sub" id="topbarSub">Welcome back — your rewards are growing</div>
+      </div>
+      <div class="topbar-right">
+        <div class="tb-streak">
+          <i class="fa-solid fa-fire"></i>
+          <span class="s-count" id="streakDisplay">14</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;">DAY STREAK</span>
+        </div>
+        <div class="tb-notif" onclick="showToast('fa-bell','You have 3 new referral bonuses pending!')">
+          <i class="fa-solid fa-bell"></i>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="tb-notif" onclick="navigate('profile')">
+          <i class="fa-solid fa-circle-user"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ PAGE: DASHBOARD ══ -->
+      <div class="page active" id="page-dashboard">
+        <!-- Daily Claim -->
+        <div class="claim-card" id="claimCard">
+          <div class="claim-top-line"></div>
+          <div class="claim-info">
+            <div class="claim-eyebrow"><span class="claim-dot"></span> Daily Reward Available</div>
+            <div class="claim-title">Claim Today's Tokens</div>
+            <div class="claim-sub">Your streak multiplier is active. Claim now to keep it going.</div>
+            <div class="claim-reward">
+              <div class="claim-reward-val" id="claimVal">250</div>
+              <div class="claim-reward-unit">NXS TOKENS</div>
+            </div>
+            <div class="claim-streak-info">Day <span id="claimStreakDay">14</span> streak · <span id="claimMult">2.5×</span> multiplier active</div>
+          </div>
+          <div class="claim-timer">
+            <div class="timer-ring">
+              <svg width="64" height="64" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#3b82f6"/>
+                    <stop offset="100%" stop-color="#ec4899"/>
+                  </linearGradient>
+                </defs>
+                <circle class="timer-ring-track" cx="32" cy="32" r="26"/>
+                <circle class="timer-ring-fill" cx="32" cy="32" r="26" id="timerCircle"
+                  stroke-dasharray="163.36" stroke-dashoffset="0"/>
+              </svg>
+              <div class="timer-center">
+                <div class="timer-h" id="timerDisplay">--</div>
+                <div class="timer-lbl">NEXT</div>
+              </div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);">Reset Timer</div>
+          </div>
+          <button class="claim-btn" id="claimBtn" onclick="claimDaily()">
+            <div class="claim-btn-main"><i class="fa-solid fa-bolt"></i> CLAIM NOW</div>
+            <div class="claim-btn-sub">Free · Zero Gas</div>
+          </button>
+        </div>
+
+        <!-- Stats row -->
+        <div class="grid-4" style="margin-bottom:24px;">
+          <div class="stat-card">
+            <div class="sc-icon blue"><i class="fa-solid fa-coins"></i></div>
+            <div class="sc-val" id="stat-balance">3,347</div>
+            <div class="sc-lbl">Total Balance (NXS)</div>
+            <div class="sc-delta">↑ +250 today</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-icon pink"><i class="fa-solid fa-user-group"></i></div>
+            <div class="sc-val" id="stat-refs">12</div>
+            <div class="sc-lbl">Active Referrals</div>
+            <div class="sc-delta">↑ 3 joined this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-icon indigo"><i class="fa-solid fa-fire-flame-curved"></i></div>
+            <div class="sc-val" id="stat-streak">14</div>
+            <div class="sc-lbl">Day Streak</div>
+            <div class="sc-delta">↑ Best: 22 days</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-icon teal"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="sc-val" id="stat-earned">1,820</div>
+            <div class="sc-lbl">Earned from Referrals</div>
+            <div class="sc-delta neg">↑ This month</div>
+          </div>
+        </div>
+
+        <!-- 2 col -->
+        <div class="grid-2" style="margin-bottom:24px;">
+          <!-- Streak Calendar -->
+          <div>
+            <div class="sec-title">This Month's Streak</div>
+            <div class="streak-calendar">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--text);">14-Day Streak</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);">March 2025</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;background:linear-gradient(90deg,var(--blue2),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">2.5×</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);">Multiplier</div>
+                </div>
+              </div>
+              <div class="streak-days" id="streakCalendar"></div>
+            </div>
+          </div>
+
+          <!-- Recent activity -->
+          <div>
+            <div class="sec-title">Recent Earnings</div>
+            <div class="history-list" id="historyList"></div>
+          </div>
+        </div>
+
+        <!-- Tier progress -->
+        <div class="sec-title">Your Tier Progress</div>
+        <div class="tier-cards" id="tierCards"></div>
+      </div>
+
+      <!-- ══ PAGE: REFERRALS ══ -->
+      <div class="page" id="page-referrals">
+
+        <!-- Hero -->
+        <div class="ref-hero">
+          <div class="ref-hero-top">
+            <div>
+              <div class="ref-hero-title">Refer & <span>Earn Daily</span></div>
+              <p class="ref-hero-sub">Share your unique code and earn <strong style="color:var(--blue2)">10% of every NXS reward</strong> your referrals collect — forever. No cap. No expiry.</p>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Lifetime Ref. Earnings</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:.04em;background:linear-gradient(90deg,var(--blue2),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">1,820 NXS</div>
+            </div>
+          </div>
+
+          <div class="ref-code-section">
+            <div class="ref-code-box">
+              <div class="ref-code-lbl">Your Referral Code</div>
+              <div class="ref-code-display">
+                <div class="ref-code-val" id="refCode">NEXUS-A7X2K</div>
+                <button class="ref-copy-btn" onclick="copyCode()">
+                  <i class="fa-solid fa-copy"></i> Copy Code
+                </button>
+              </div>
+              <div class="ref-link-row">
+                <div class="ref-link-val" id="refLink">https://nexus.app/join?ref=NEXUS-A7X2K</div>
+                <button class="ref-link-copy" onclick="copyLink()"><i class="fa-solid fa-link"></i></button>
+              </div>
+            </div>
+
+            <div class="ref-share">
+              <div class="ref-share-lbl">Share On</div>
+              <div class="ref-share-btns">
+                <button class="share-btn tw" onclick="shareTwitter()">
+                  <i class="fa-brands fa-x-twitter"></i> Twitter
+                </button>
+                <button class="share-btn tg" onclick="shareTelegram()">
+                  <i class="fa-brands fa-telegram"></i> Telegram
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ref-stats">
+            <div class="ref-stat"><div class="rs-val">12</div><div class="rs-lbl">Total Referrals</div></div>
+            <div class="ref-stat"><div class="rs-val">9</div><div class="rs-lbl">Active Users</div></div>
+            <div class="ref-stat"><div class="rs-val">1,820</div><div class="rs-lbl">NXS Earned</div></div>
+            <div class="ref-stat"><div class="rs-val">152</div><div class="rs-lbl">NXS This Week</div></div>
+          </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="sec-title" style="margin-bottom:10px;">How Referrals Work</div>
+        <div class="how-steps" style="margin-bottom:24px;">
+          <div class="hs-card">
+            <div class="hs-num" data-n="01">01</div>
+            <div class="hs-icon b"><i class="fa-solid fa-share-nodes"></i></div>
+            <div class="hs-title">Share Your Code</div>
+            <div class="hs-desc">Send your unique referral link to friends via any channel.</div>
+            <div class="hs-reward"><i class="fa-solid fa-bolt" style="font-size:9px;"></i> Free to share</div>
+          </div>
+          <div class="hs-card">
+            <div class="hs-num" data-n="02">02</div>
+            <div class="hs-icon i"><i class="fa-solid fa-user-plus"></i></div>
+            <div class="hs-title">They Sign Up</div>
+            <div class="hs-desc">Your friend creates an account using your code and gets a bonus.</div>
+            <div class="hs-reward"><i class="fa-solid fa-bolt" style="font-size:9px;"></i> +500 NXS for them</div>
+          </div>
+          <div class="hs-card">
+            <div class="hs-num" data-n="03">03</div>
+            <div class="hs-icon b"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="hs-title">They Earn Daily</div>
+            <div class="hs-desc">Every day your referral logs in and earns, you get a cut automatically.</div>
+            <div class="hs-reward"><i class="fa-solid fa-bolt" style="font-size:9px;"></i> 10% of their earnings</div>
+          </div>
+          <div class="hs-card">
+            <div class="hs-num" data-n="04">04</div>
+            <div class="hs-icon p"><i class="fa-solid fa-infinity"></i></div>
+            <div class="hs-title">Forever Income</div>
+            <div class="hs-desc">No expiry. No cap. Your referral earnings compound as your network grows.</div>
+            <div class="hs-reward pk"><i class="fa-solid fa-fire-flame-curved" style="font-size:9px;"></i> Unlimited ceiling</div>
+          </div>
+        </div>
+
+        <!-- Referral table -->
+        <div class="sec-title">Your Referrals</div>
+        <div class="ref-table">
+          <div class="rt-header">
+            <span>User</span><span>Joined</span><span>Tier</span><span>Your Earnings</span><span>Status</span>
+          </div>
+          <div id="refTableBody"></div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: EARN ══ -->
+      <div class="page" id="page-earn">
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div class="claim-card" id="claimCard2" style="margin-bottom:0;flex-direction:column;align-items:flex-start;">
+            <div class="claim-top-line"></div>
+            <div class="claim-info" style="width:100%;">
+              <div class="claim-eyebrow"><span class="claim-dot"></span> Daily Reward</div>
+              <div class="claim-title">Daily Login Bonus</div>
+              <div class="claim-sub">Log in every day to keep your streak and multiply your base reward.</div>
+              <div class="claim-reward" style="margin-top:10px;">
+                <div class="claim-reward-val" id="claimVal2">250</div>
+                <div class="claim-reward-unit">NXS TOKENS</div>
+              </div>
+            </div>
+            <button class="claim-btn" id="claimBtn2" onclick="claimDaily()" style="margin-top:18px;width:100%;">
+              <div class="claim-btn-main"><i class="fa-solid fa-bolt"></i> CLAIM NOW</div>
+              <div class="claim-btn-sub">Resets in 24h</div>
+            </button>
+          </div>
+
+          <!-- Tasks -->
+          <div>
+            <div class="sec-title">Today's Tasks</div>
+            <div id="taskList" style="display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
+        </div>
+
+        <div class="sec-title">All Earning Methods</div>
+        <div class="grid-3" style="margin-bottom:24px;" id="earnMethods"></div>
+      </div>
+
+      <!-- ══ PAGE: LEADERBOARD ══ -->
+      <div class="page" id="page-leaderboard">
+        <div class="grid-2">
+          <div>
+            <div class="sec-title">Top Earners This Month</div>
+            <div class="leaderboard" id="lbEarners"></div>
+          </div>
+          <div>
+            <div class="sec-title">Top Referrers</div>
+            <div class="leaderboard" id="lbReferrers"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: REWARDS ══ -->
+      <div class="page" id="page-rewards">
+        <div class="sec-title">Membership Tiers</div>
+        <div class="tier-cards" id="tierCardsRewards" style="margin-bottom:28px;"></div>
+
+        <div class="sec-title">Earnings History</div>
+        <div style="background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:6px 22px;" id="fullHistory"></div>
+      </div>
+
+      <!-- ══ PAGE: PROFILE ══ -->
+      <div class="page" id="page-profile">
+        <div class="grid-2">
+          <div>
+            <div class="sec-title">Your Profile</div>
+            <div style="background:var(--card);border:1px solid var(--rim);border-radius:16px;padding:28px;">
+              <div style="display:flex;align-items:center;gap:18px;margin-bottom:24px;">
+                <div id="profileAvatar" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;box-shadow:0 0 24px rgba(59,130,246,.3);">A</div>
+                <div>
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;color:var(--text);" id="profileName">Alex Chen</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue2);" id="profileTier">Stellar Tier</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;" id="profileEmail">alex@email.com</div>
+                </div>
+              </div>
+              <div class="m-input-group"><div class="m-lbl">Display Name</div><input class="m-input" id="editName" placeholder="Your name"/></div>
+              <div class="m-input-group"><div class="m-lbl">Email</div><input class="m-input" id="editEmail" placeholder="Email" type="email"/></div>
+              <div class="m-input-group"><div class="m-lbl">Wallet Address</div><input class="m-input" id="editWallet" placeholder="0x..." style="font-family:'JetBrains Mono',monospace;font-size:11px;"/></div>
+              <button class="btn-primary" onclick="saveProfile()" style="margin-top:8px;"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+            </div>
+          </div>
+          <div>
+            <div class="sec-title">Account Stats</div>
+            <div style="display:flex;flex-direction:column;gap:10px;" id="profileStats"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAGE: SETTINGS ══ -->
+      <div class="page" id="page-settings">
+        <div style="max-width:560px;">
+          <div class="sec-title">App Settings</div>
+          <div style="background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:6px 0;margin-bottom:20px;" id="settingsPanel"></div>
+          <div class="sec-title">Danger Zone</div>
+          <div style="background:var(--card);border:1px solid rgba(236,72,153,.15);border-radius:14px;padding:20px 22px;">
+            <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Resetting will clear all app data and return to onboarding. Your on-chain tokens remain safe.</div>
+            <button onclick="resetApp()" style="background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2);border-radius:8px;padding:10px 22px;color:var(--pink2);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s;">
+              <i class="fa-solid fa-rotate-left"></i> Reset Demo
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+
+<!-- TOAST STACK -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ═══════════ SVG DEFS ═══════════ -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="avGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="avGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="avGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<script>
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const STATE = {
+  user: { name: 'Alex Chen', email: 'alex@email.com', wallet: '0x3a4b...c9d1', tier: 'Stellar' },
+  balance: 3347,
+  streak: 14,
+  multiplier: 2.5,
+  baseReward: 100,
+  claimed: false,
+  refs: 12,
+  refEarned: 1820,
+  refCode: 'NEXUS-A7X2K',
+  history: [
+    { type: 'Daily Login', time: 'Today, 9:41 AM', amt: 250, cat: 'b', icon: 'fa-calendar-check', sign: '+' },
+    { type: 'Referral Bonus — Jake M.', time: 'Today, 8:20 AM', amt: 82, cat: 'p', icon: 'fa-user-group', sign: '+' },
+    { type: 'Task: Follow on Twitter', time: 'Yesterday', amt: 100, cat: 'i', icon: 'fa-list-check', sign: '+' },
+    { type: 'Referral Bonus — Sofia K.', time: 'Yesterday', amt: 44, cat: 'p', icon: 'fa-user-group', sign: '+' },
+    { type: 'Daily Login', time: 'Yesterday', amt: 240, cat: 'b', icon: 'fa-calendar-check', sign: '+' },
+    { type: 'Streak Milestone — 7 Days', time: '7 days ago', amt: 500, cat: 'i', icon: 'fa-fire-flame-curved', sign: '+' },
+  ],
+  referrals: [
+    { name: 'Jake M.', joined: 'Mar 1', tier: 'stellar', earned: 820, status: 'active', color: 'url(#avGrad1)' },
+    { name: 'Sofia K.', joined: 'Mar 3', tier: 'charged', earned: 440, status: 'active', color: 'url(#avGrad2)' },
+    { name: 'Amir T.', joined: 'Mar 5', tier: 'stellar', earned: 280, status: 'active', color: 'url(#avGrad3)' },
+    { name: 'Lena B.', joined: 'Mar 7', tier: 'seedling', earned: 160, status: 'active', color: 'url(#avGrad1)' },
+    { name: 'Marco R.', joined: 'Mar 8', tier: 'seedling', earned: 80, status: 'pending', color: 'url(#avGrad2)' },
+    { name: 'Priya S.', joined: 'Mar 9', tier: 'charged', earned: 40, status: 'active', color: 'url(#avGrad3)' },
+  ],
+  tasks: [
+    { label: 'Follow NΞXUS on Twitter', reward: 100, done: false, icon: 'fa-brands fa-x-twitter', cat: 'b' },
+    { label: 'Join our Discord server', reward: 150, done: false, icon: 'fa-brands fa-discord', cat: 'i' },
+    { label: 'Share your referral code', reward: 75, done: false, icon: 'fa-solid fa-share-nodes', cat: 'p' },
+    { label: 'Complete your profile', reward: 200, done: true, icon: 'fa-solid fa-circle-user', cat: 'b' },
+  ],
+  settings: {
+    notifications: true,
+    dailyReminder: true,
+    referralAlerts: true,
+    marketingEmails: false,
+  }
+};
+
+const TIERS = [
+  { name: 'Seedling', daily: 50, icon: 'fa-seedling', color: 'teal', req: 0, desc: 'Daily check-in + basic tasks', reqLabel: 'Starting Tier' },
+  { name: 'Charged', daily: 150, icon: 'fa-bolt', color: 'indigo', req: 5000, desc: '3× multiplier + priority tasks', reqLabel: '5,000 NXS' },
+  { name: 'Stellar', daily: 500, icon: 'fa-star', color: 'blue', req: 25000, desc: '10× multiplier + NFT drops', reqLabel: '25,000 NXS', active: true },
+  { name: 'Apex', daily: 2000, icon: 'fa-crown', color: 'pink', req: 100000, desc: '40× multiplier + revenue share', reqLabel: '100,000 NXS' },
+];
+
+const LEADERS = [
+  { name: 'nova_x', score: 14820, refs: 48, grad: 'url(#avGrad1)' },
+  { name: 'prism_k', score: 12340, refs: 39, grad: 'url(#avGrad2)' },
+  { name: 'aiden_nft', score: 10200, refs: 31, grad: 'url(#avGrad3)' },
+  { name: 'skynet42', score: 8750, refs: 27, grad: 'url(#avGrad1)' },
+  { name: 'You (Alex)', score: 3347, refs: 12, grad: 'url(#avGrad2)', me: true },
+  { name: 'block_jay', score: 2900, refs: 9, grad: 'url(#avGrad3)' },
+];
+
+/* ═══════════════════════════════════════
+   BG CANVAS
+═══════════════════════════════════════ */
+const bc = document.getElementById('bgc');
+const bx = bc.getContext('2d');
+let BW, BH, pts = [];
+function rsz() { BW = bc.width = window.innerWidth; BH = bc.height = window.innerHeight; }
+rsz(); window.addEventListener('resize', rsz);
+class Pt {
+  constructor() { this.init(); }
+  init() {
+    this.x = Math.random() * BW; this.y = Math.random() * BH;
+    this.vx = (Math.random() - .5) * .22; this.vy = (Math.random() - .5) * .22;
+    this.r = Math.random() * 1.4 + .3;
+    const t = Math.random();
+    this.c = t < .55 ? `rgba(59,130,246,${.08 + Math.random() * .36})` :
+      t < .82 ? `rgba(99,102,241,${.06 + Math.random() * .3})` :
+        `rgba(236,72,153,${.05 + Math.random() * .22})`;
+    this.life = 0; this.ml = Math.random() * 600 + 300;
+  }
+  tick() {
+    this.x += this.vx; this.y += this.vy; this.life++;
+    if (this.x < 0 || this.x > BW || this.y < 0 || this.y > BH || this.life > this.ml) this.init();
+  }
+  draw() { bx.beginPath(); bx.arc(this.x, this.y, this.r, 0, Math.PI * 2); bx.fillStyle = this.c; bx.fill(); }
+}
+for (let i = 0; i < 140; i++) pts.push(new Pt());
+(function bgLoop() {
+  bx.clearRect(0, 0, BW, BH);
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 80) { bx.beginPath(); bx.moveTo(pts[i].x, pts[i].y); bx.lineTo(pts[j].x, pts[j].y); bx.strokeStyle = `rgba(59,130,246,${(.78 - d / 80) * .06})`; bx.lineWidth = .5; bx.stroke(); }
+    }
+  }
+  pts.forEach(p => { p.tick(); p.draw(); });
+  requestAnimationFrame(bgLoop);
+})();
+
+/* ═══════════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════════ */
+let selectedWallet = null;
+
+function obNext(step) {
+  if (step === 2) {
+    const name = document.getElementById('obName').value.trim();
+    const email = document.getElementById('obEmail').value.trim();
+    const refInput = document.getElementById('obRef').value.trim();
+    if (!name) { showToast('fa-triangle-exclamation', 'Please enter your name.'); return; }
+    STATE.user.name = name;
+    STATE.user.email = email || 'user@email.com';
+    if (refInput) { STATE.balance += 100; showToast('fa-gift', `Referral code applied! Bonus NXS incoming.`); }
+  }
+  if (step === 3 && !selectedWallet) { showToast('fa-triangle-exclamation', 'Please select a wallet to connect.'); return; }
+  document.getElementById('obStep' + (step - 1)).style.display = 'none';
+  document.getElementById('obStep' + step).style.display = 'block';
+  // update steps
+  const dots = document.getElementById('obSteps').children;
+  for (let i = 0; i < dots.length; i++) {
+    dots[i].className = 'ob-step' + (i < step - 1 ? ' done' : i === step - 1 ? ' active' : '');
+  }
+}
+
+function obSelectWallet(btn, name) {
+  document.querySelectorAll('.wallet-opt').forEach(b => { b.style.borderColor = 'var(--rim)'; b.style.background = 'rgba(59,130,246,.06)'; });
+  btn.style.borderColor = 'rgba(59,130,246,.4)'; btn.style.background = 'rgba(59,130,246,.14)';
+  selectedWallet = name;
+  document.getElementById('obWalletBtn').disabled = false;
+  document.getElementById('obWalletBtn').style.opacity = '1';
+}
+
+function launchApp() {
+  const overlay = document.getElementById('onboardOverlay');
+  overlay.style.opacity = '0'; overlay.style.transition = 'opacity .5s';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    document.getElementById('appShell').style.display = 'flex';
+    initApp();
+  }, 500);
+}
+
+/* ═══════════════════════════════════════
+   APP INIT
+═══════════════════════════════════════ */
+function initApp() {
+  updateSidebar();
+  renderStreakCalendar();
+  renderHistory();
+  renderTierCards();
+  renderRefTable();
+  renderLeaderboard();
+  renderEarnPage();
+  renderRewardsPage();
+  renderProfilePage();
+  renderSettings();
+  startTimer();
+  // start live balance tick
+  setInterval(() => {
+    STATE.refEarned += Math.random() < .3 ? Math.floor(Math.random() * 3 + 1) : 0;
+    updateSidebar();
+  }, 8000);
+}
+
+function updateSidebar() {
+  const abbrev = n => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n.toLocaleString();
+  document.getElementById('sbAvatar').textContent = STATE.user.name[0].toUpperCase();
+  document.getElementById('sbUname').textContent = STATE.user.name;
+  document.getElementById('sbTier').textContent = STATE.user.tier + ' Tier';
+  document.getElementById('sbBalance').textContent = abbrev(STATE.balance);
+  document.getElementById('sbUsd').textContent = '≈ $' + (STATE.balance * 0.05).toFixed(2) + ' USD';
+  document.getElementById('stat-balance').textContent = abbrev(STATE.balance);
+  document.getElementById('stat-refs').textContent = STATE.refs;
+  document.getElementById('stat-streak').textContent = STATE.streak;
+  document.getElementById('stat-earned').textContent = abbrev(STATE.refEarned);
+  document.getElementById('streakDisplay').textContent = STATE.streak;
+}
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+const PAGE_TITLES = {
+  dashboard: ['Dashboard', 'Welcome back — your rewards are growing'],
+  referrals: ['Referrals', 'Grow your network and earn forever'],
+  earn: ['Earn', 'Complete tasks and claim daily rewards'],
+  leaderboard: ['Leaderboard', 'See how you rank globally'],
+  rewards: ['Rewards', 'Your earnings history and tier progress'],
+  profile: ['Profile', 'Manage your account'],
+  settings: ['Settings', 'Customize your experience'],
+};
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  const [title, sub] = PAGE_TITLES[page] || ['NΞXUS', ''];
+  document.getElementById('topbarTitle').textContent = title;
+  document.getElementById('topbarSub').textContent = sub;
+  if (page === 'referrals') document.getElementById('refBadge').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════
+   DAILY CLAIM
+═══════════════════════════════════════ */
+let claimCooldown = false;
+
+function claimDaily() {
+  if (claimCooldown || STATE.claimed) {
+    showToast('fa-clock', 'Already claimed today! Come back tomorrow.'); return;
+  }
+  STATE.claimed = true; claimCooldown = true;
+  const reward = Math.round(STATE.baseReward * STATE.multiplier);
+  STATE.balance += reward;
+  STATE.streak++;
+  STATE.multiplier = Math.min(5, parseFloat((1 + STATE.streak * 0.1).toFixed(1)));
+  updateSidebar();
+
+  // update claim cards
+  ['claimBtn', 'claimBtn2'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) { btn.classList.add('claimed'); btn.innerHTML = '<div class="claim-btn-main"><i class="fa-solid fa-check"></i> CLAIMED</div><div class="claim-btn-sub">See you tomorrow!</div>'; }
+  });
+  ['claimVal', 'claimVal2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = Math.round(STATE.baseReward * STATE.multiplier);
+  });
+
+  // add to history
+  STATE.history.unshift({ type: 'Daily Login', time: 'Just now', amt: reward, cat: 'b', icon: 'fa-calendar-check', sign: '+' });
+  renderHistory();
+
+  burst(document.getElementById('claimBtn'));
+  showToast('fa-bolt', `+${reward} NXS claimed! Streak: ${STATE.streak} days`);
+
+  setTimeout(() => { claimCooldown = false; }, 3000);
+}
+
+/* ═══════════════════════════════════════
+   TIMER
+═══════════════════════════════════════ */
+function startTimer() {
+  const now = new Date();
+  const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+
+  function tick() {
+    const diff = Math.max(0, midnight - Date.now());
+    const h = Math.floor(diff / 36e5);
+    const m = Math.floor((diff % 36e5) / 6e4);
+    const s = Math.floor((diff % 6e4) / 1e3);
+    const label = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    const timerEl = document.getElementById('timerDisplay');
+    if (timerEl) timerEl.textContent = label;
+
+    // ring progress (fraction of 24h remaining)
+    const pct = diff / 864e5;
+    const circ = 163.36;
+    const circle = document.getElementById('timerCircle');
+    if (circle) circle.style.strokeDashoffset = circ * pct;
+
+    document.getElementById('claimStreakDay').textContent = STATE.streak;
+    document.getElementById('claimMult').textContent = STATE.multiplier + '×';
+    const cv = Math.round(STATE.baseReward * STATE.multiplier);
+    ['claimVal', 'claimVal2'].forEach(id => { const el = document.getElementById(id); if (el && !STATE.claimed) el.textContent = cv; });
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+/* ═══════════════════════════════════════
+   STREAK CALENDAR
+═══════════════════════════════════════ */
+function renderStreakCalendar() {
+  const wrap = document.getElementById('streakCalendar'); if (!wrap) return;
+  const days = ['M','T','W','T','F','S','S'];
+  let html = '';
+  for (let i = 1; i <= 21; i++) {
+    const dayLabel = days[(i - 1) % 7];
+    let cls = 'streak-day';
+    let inner = `<i class="fa-solid fa-circle" style="font-size:7px;"></i><span>${dayLabel}</span>`;
+    if (i < STATE.streak) { cls += ' done'; inner = `<i class="fa-solid fa-check" style="font-size:10px;"></i><span>${dayLabel}</span>`; }
+    else if (i === STATE.streak) { cls += ' today'; inner = `<i class="fa-solid fa-star" style="font-size:10px;"></i><span>NOW</span>`; }
+    html += `<div class="${cls}">${inner}</div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════
+   HISTORY
+═══════════════════════════════════════ */
+function renderHistory() {
+  const el = document.getElementById('historyList'); if (!el) return;
+  el.innerHTML = STATE.history.slice(0, 6).map(h => `
+    <div class="history-item">
+      <div class="h-ico ${h.cat}"><i class="fa-solid ${h.icon}"></i></div>
+      <div class="h-info">
+        <div class="h-type">${h.type}</div>
+        <div class="h-time">${h.time}</div>
+      </div>
+      <div class="h-amt ${h.cat === 'p' ? 'pink' : 'plus'}">${h.sign}${h.amt} NXS</div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════
+   TIER CARDS
+═══════════════════════════════════════ */
+function renderTierCards() {
+  ['tierCards', 'tierCardsRewards'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = TIERS.map((t, i) => {
+      const progress = i === 0 ? 100 : i === 2 ? 13 : i === 1 ? 67 : 3;
+      const isActive = t.name === STATE.user.tier;
+      return `<div class="tier-c${isActive ? ' active-tier' : ''}">
+        <div class="t-ico"><i class="fa-solid ${t.icon}" style="color:${t.color === 'pink' ? 'var(--pink2)' : t.color === 'teal' ? '#5eead4' : t.color === 'indigo' ? '#a5b4fc' : 'var(--blue2)'}"></i></div>
+        <div class="t-name">${t.name}</div>
+        <div class="t-daily">${t.daily}</div>
+        <div class="t-unit">NXS / day</div>
+        <div class="t-perks">${t.desc}</div>
+        <div class="t-req">${isActive ? '✓ Current Tier' : `Unlock at ${t.reqLabel}`}</div>
+        ${!isActive && i === 3 ? `<div class="t-progress" style="margin-top:8px;"><div class="tier-progress-track"><div class="tier-progress-fill" style="width:${progress}%"></div></div></div>` : ''}
+      </div>`;
+    }).join('');
+  });
+}
+
+/* ═══════════════════════════════════════
+   REFERRAL TABLE
+═══════════════════════════════════════ */
+function renderRefTable() {
+  const el = document.getElementById('refTableBody'); if (!el) return;
+  el.innerHTML = STATE.referrals.map(r => `
+    <div class="rt-row">
+      <div class="rt-user">
+        <div class="rt-avatar" style="background:${r.color}">${r.name[0]}</div>
+        <div class="rt-uname">${r.name}</div>
+      </div>
+      <div class="rt-date">${r.joined}</div>
+      <div><span class="rt-tier ${r.tier}">${r.tier}</span></div>
+      <div class="rt-earned">+${r.earned} NXS</div>
+      <div><span class="rt-status ${r.status}"><span class="dot"></span>${r.status}</span></div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════
+   LEADERBOARD
+═══════════════════════════════════════ */
+function renderLeaderboard() {
+  function row(u, i, type) {
+    const rankClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rx';
+    const pct = Math.round((u.score / LEADERS[0].score) * 100);
+    const val = type === 'earn' ? u.score.toLocaleString() : u.refs;
+    return `<div class="lb-row${u.me ? ' me' : ''}">
+      <div class="lb-rank ${rankClass}">${i + 1}</div>
+      <div class="lb-avatar" style="background:${u.grad}">${u.name[0].toUpperCase()}</div>
+      <div class="lb-info">
+        <div class="lb-name">${u.name}${u.me ? ' <span style="font-size:10px;color:var(--blue2);font-family:\'JetBrains Mono\',monospace;">(you)</span>' : ''}</div>
+        <div class="lb-refs">${u.refs} referrals</div>
+      </div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%"></div></div>
+      <div class="lb-score">${val}</div>
+    </div>`;
+  }
+
+  const earn = document.getElementById('lbEarners'); if (earn) earn.innerHTML = LEADERS.map((u, i) => row(u, i, 'earn')).join('');
+  const refSort = [...LEADERS].sort((a, b) => b.refs - a.refs);
+  const ref = document.getElementById('lbReferrers'); if (ref) ref.innerHTML = refSort.map((u, i) => row(u, i, 'ref')).join('');
+}
+
+/* ═══════════════════════════════════════
+   EARN PAGE
+═══════════════════════════════════════ */
+function renderEarnPage() {
+  const tl = document.getElementById('taskList'); if (!tl) return;
+  tl.innerHTML = STATE.tasks.map((t, i) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid ${t.done ? 'rgba(59,130,246,.18)' : 'var(--rim)'};border-radius:10px;transition:all .2s;${t.done ? 'opacity:.6' : ''}">
+      <div style="width:36px;height:36px;border-radius:9px;background:${t.done ? 'rgba(59,130,246,.12)' : t.cat === 'b' ? 'rgba(59,130,246,.08)' : t.cat === 'p' ? 'rgba(236,72,153,.08)' : 'rgba(99,102,241,.08)'};border:1px solid ${t.done ? 'rgba(59,130,246,.25)' : 'var(--rim)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="${t.icon}" style="color:${t.done ? 'var(--blue2)' : 'var(--text2)'};font-size:14px;"></i>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;color:${t.done ? 'var(--text2)' : 'var(--text)'};${t.done ? 'text-decoration:line-through;' : ''}">${t.label}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue2);">+${t.reward} NXS</div>
+      </div>
+      <button onclick="completeTask(${i})" style="padding:7px 14px;background:${t.done ? 'transparent' : 'rgba(59,130,246,.1)'};border:1px solid ${t.done ? 'transparent' : 'rgba(59,130,246,.2)'};border-radius:6px;color:${t.done ? 'var(--text3)' : 'var(--blue2)'};font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:${t.done ? 'default' : 'pointer'};transition:all .2s;">
+        ${t.done ? '<i class="fa-solid fa-check"></i> Done' : 'Complete →'}
+      </button>
+    </div>`).join('');
+
+  const em = document.getElementById('earnMethods'); if (!em) return;
+  const methods = [
+    { icon: 'fa-calendar-check', cat: 'blue', title: 'Daily Check-In', desc: 'Log in every day for base rewards. Streak multipliers compound daily.', reward: '+50–500 NXS/day' },
+    { icon: 'fa-user-group', cat: 'pink', title: 'Refer Friends', desc: 'Earn 10% of every reward your referrals collect. Unlimited and permanent.', reward: '10% forever' },
+    { icon: 'fa-list-check', cat: 'indigo', title: 'Complete Tasks', desc: 'Daily missions drop fresh NXS. Social tasks, on-chain actions, and more.', reward: '+20–500 NXS/task' },
+    { icon: 'fa-fire-flame-curved', cat: 'blue', title: 'Streak Milestones', desc: 'Hit 7, 14, 30, and 100-day streaks for massive one-time drops.', reward: 'Up to +5,000 NXS' },
+    { icon: 'fa-diamond', cat: 'indigo', title: 'Stake Your NFTs', desc: 'Hold and stake earned NFTs inside NΞXUS for passive daily income.', reward: '+200–2,000 NXS/day' },
+    { icon: 'fa-bolt-lightning', cat: 'pink', title: 'Flash Events', desc: '24-hour surprise events drop massive reward pools. Notifications keep you in.', reward: 'Up to +50,000 NXS' },
+  ];
+  em.innerHTML = methods.map(m => `
+    <div style="background:var(--card);border:1px solid var(--rim);border-radius:12px;padding:22px;transition:transform .2s,box-shadow .2s;" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 36px rgba(0,0,0,.3)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      <div style="width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px;border:1px solid;background:rgba(${m.cat === 'blue' ? '59,130,246' : m.cat === 'pink' ? '236,72,153' : '99,102,241'},.09);border-color:rgba(${m.cat === 'blue' ? '59,130,246' : m.cat === 'pink' ? '236,72,153' : '99,102,241'},.18);color:${m.cat === 'blue' ? 'var(--blue2)' : m.cat === 'pink' ? 'var(--pink2)' : '#a5b4fc'};">
+        <i class="fa-solid ${m.icon}"></i>
+      </div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">${m.title}</div>
+      <div style="font-size:12px;font-weight:300;color:var(--text2);line-height:1.65;margin-bottom:12px;">${m.desc}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:${m.cat === 'pink' ? 'var(--pink2)' : 'var(--blue2)'};background:rgba(${m.cat === 'blue' ? '59,130,246' : m.cat === 'pink' ? '236,72,153' : '99,102,241'},.08);padding:4px 10px;border-radius:3px;border:1px solid rgba(${m.cat === 'blue' ? '59,130,246' : m.cat === 'pink' ? '236,72,153' : '99,102,241'},.14);display:inline-flex;align-items:center;gap:5px;">
+        <i class="fa-solid fa-bolt" style="font-size:8px;"></i>${m.reward}
+      </div>
+    </div>`).join('');
+}
+
+function completeTask(i) {
+  if (STATE.tasks[i].done) return;
+  STATE.tasks[i].done = true;
+  STATE.balance += STATE.tasks[i].reward;
+  showToast('fa-check-circle', `Task complete! +${STATE.tasks[i].reward} NXS earned.`);
+  burst();
+  renderEarnPage();
+  updateSidebar();
+}
+
+/* ═══════════════════════════════════════
+   REWARDS PAGE
+═══════════════════════════════════════ */
+function renderRewardsPage() {
+  const el = document.getElementById('fullHistory'); if (!el) return;
+  el.innerHTML = STATE.history.map(h => `
+    <div class="history-item">
+      <div class="h-ico ${h.cat}"><i class="fa-solid ${h.icon}"></i></div>
+      <div class="h-info"><div class="h-type">${h.type}</div><div class="h-time">${h.time}</div></div>
+      <div class="h-amt ${h.cat === 'p' ? 'pink' : 'plus'}">${h.sign}${h.amt} NXS</div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════
+   PROFILE
+═══════════════════════════════════════ */
+function renderProfilePage() {
+  document.getElementById('profileAvatar').textContent = STATE.user.name[0].toUpperCase();
+  document.getElementById('profileName').textContent = STATE.user.name;
+  document.getElementById('profileTier').textContent = STATE.user.tier + ' Tier';
+  document.getElementById('profileEmail').textContent = STATE.user.email;
+  document.getElementById('editName').value = STATE.user.name;
+  document.getElementById('editEmail').value = STATE.user.email;
+  document.getElementById('editWallet').value = STATE.user.wallet;
+
+  const ps = document.getElementById('profileStats'); if (!ps) return;
+  const stats = [
+    { icon: 'fa-coins', label: 'Total NXS Earned', val: STATE.balance.toLocaleString(), cat: 'blue' },
+    { icon: 'fa-user-group', label: 'Total Referrals', val: STATE.refs, cat: 'pink' },
+    { icon: 'fa-fire-flame-curved', label: 'Current Streak', val: STATE.streak + ' days', cat: 'indigo' },
+    { icon: 'fa-trophy', label: 'Best Streak', val: '22 days', cat: 'blue' },
+    { icon: 'fa-gem', label: 'Current Tier', val: STATE.user.tier, cat: 'indigo' },
+    { icon: 'fa-chart-line', label: 'Referral Earnings', val: STATE.refEarned.toLocaleString() + ' NXS', cat: 'pink' },
+  ];
+  ps.innerHTML = stats.map(s => `
+    <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--rim);border-radius:10px;padding:13px 16px;">
+      <div style="width:36px;height:36px;border-radius:9px;background:rgba(${s.cat === 'blue' ? '59,130,246' : s.cat === 'pink' ? '236,72,153' : '99,102,241'},.1);border:1px solid rgba(${s.cat === 'blue' ? '59,130,246' : s.cat === 'pink' ? '236,72,153' : '99,102,241'},.18);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:${s.cat === 'blue' ? 'var(--blue2)' : s.cat === 'pink' ? 'var(--pink2)' : '#a5b4fc'};">
+        <i class="fa-solid ${s.icon}"></i>
+      </div>
+      <div style="flex:1;"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);">${s.label}</div></div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;background:linear-gradient(90deg,var(--blue2),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${s.val}</div>
+    </div>`).join('');
+}
+
+function saveProfile() {
+  STATE.user.name = document.getElementById('editName').value || STATE.user.name;
+  STATE.user.email = document.getElementById('editEmail').value || STATE.user.email;
+  STATE.user.wallet = document.getElementById('editWallet').value || STATE.user.wallet;
+  renderProfilePage(); updateSidebar();
+  showToast('fa-floppy-disk', 'Profile saved successfully.');
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════ */
+function renderSettings() {
+  const el = document.getElementById('settingsPanel'); if (!el) return;
+  const items = [
+    { key: 'notifications', label: 'Push Notifications', desc: 'Receive app alerts' },
+    { key: 'dailyReminder', label: 'Daily Claim Reminder', desc: 'Reminder to claim your daily reward' },
+    { key: 'referralAlerts', label: 'Referral Alerts', desc: 'Notify when a referral earns' },
+    { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Product updates and news' },
+  ];
+  el.innerHTML = items.map(item => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid rgba(255,255,255,.04);">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);">${item.label}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;">${item.desc}</div>
+      </div>
+      <div onclick="toggleSetting('${item.key}',this)" style="width:44px;height:24px;border-radius:12px;background:${STATE.settings[item.key] ? 'linear-gradient(90deg,var(--blue),var(--indigo))' : 'rgba(255,255,255,.08)'};cursor:pointer;position:relative;transition:background .25s;border:1px solid ${STATE.settings[item.key] ? 'transparent' : 'var(--rim)'};">
+        <div style="position:absolute;top:3px;left:${STATE.settings[item.key] ? '22px' : '3px'};width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3);"></div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleSetting(key, el) {
+  STATE.settings[key] = !STATE.settings[key];
+  el.style.background = STATE.settings[key] ? 'linear-gradient(90deg,var(--blue),var(--indigo))' : 'rgba(255,255,255,.08)';
+  el.style.borderColor = STATE.settings[key] ? 'transparent' : 'var(--rim)';
+  el.querySelector('div').style.left = STATE.settings[key] ? '22px' : '3px';
+  showToast('fa-gear', `${key} ${STATE.settings[key] ? 'enabled' : 'disabled'}.`);
+}
+
+/* ═══════════════════════════════════════
+   REFERRAL ACTIONS
+═══════════════════════════════════════ */
+function copyCode() {
+  navigator.clipboard?.writeText(STATE.refCode).catch(() => {});
+  showToast('fa-copy', `Code "${STATE.refCode}" copied to clipboard!`);
+  burst();
+}
+function copyLink() {
+  const link = `https://nexus.app/join?ref=${STATE.refCode}`;
+  navigator.clipboard?.writeText(link).catch(() => {});
+  showToast('fa-link', 'Referral link copied!');
+}
+function shareTwitter() {
+  showToast('fa-brands fa-x-twitter', 'Opening Twitter share...');
+}
+function shareTelegram() {
+  showToast('fa-brands fa-telegram', 'Opening Telegram share...');
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function showToast(iconClass, msg) {
+  const stack = document.getElementById('toastStack');
+  const t = document.createElement('div');
+  t.className = 'toast-item';
+  t.innerHTML = `<i class="fa-solid ${iconClass} ti-icon"></i><div class="ti-text">${msg}</div><div class="ti-bar"></div>`;
+  // fix icon class (might be fa-brands)
+  const ico = t.querySelector('.ti-icon');
+  ico.className = `${iconClass.includes('fa-brands') ? 'fa-brands' : 'fa-solid'} ${iconClass.replace('fa-brands ','')} ti-icon`;
+  stack.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => {
+    t.classList.add('leaving');
+    setTimeout(() => t.remove(), 300);
+  }, 3700);
+}
+
+/* ═══════════════════════════════════════
+   BURST
+═══════════════════════════════════════ */
+function burst(el) {
+  let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+  if (el) { try { const r = el.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; } catch (e) {} }
+  const colors = ['#3b82f6', '#6366f1', '#ec4899', '#60a5fa', '#f472b6'];
+  for (let i = 0; i < 18; i++) {
+    const dot = document.createElement('div');
+    const sz = 3 + Math.random() * 5;
+    dot.className = 'burst-dot';
+    dot.style.cssText = `left:${cx}px;top:${cy}px;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random() * colors.length)]};transition:transform ${.45 + Math.random() * .45}s cubic-bezier(.22,.68,0,1.2),opacity ${.35 + Math.random() * .4}s ease;`;
+    document.body.appendChild(dot);
+    const ang = (i / 18) * Math.PI * 2, dist = 50 + Math.random() * 100;
+    setTimeout(() => { dot.style.transform = `translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px) scale(0)`; dot.style.opacity = '0'; }, 10);
+    setTimeout(() => dot.remove(), 900);
+  }
+}
+
+/* ═══════════════════════════════════════
+   RESET
+═══════════════════════════════════════ */
+function resetApp() {
+  document.getElementById('appShell').style.display = 'none';
+  const ob = document.getElementById('onboardOverlay');
+  ob.style.display = 'flex'; ob.style.opacity = '0';
+  setTimeout(() => { ob.style.transition = 'opacity .5s'; ob.style.opacity = '1'; }, 10);
+  document.getElementById('obStep1').style.display = 'block';
+  document.getElementById('obStep2').style.display = 'none';
+  document.getElementById('obStep3').style.display = 'none';
+  document.getElementById('obName').value = '';
+  document.getElementById('obEmail').value = '';
+  document.getElementById('obRef').value = '';
+}
+</script>
+</body>
+</html>
