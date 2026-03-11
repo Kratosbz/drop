@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NΞXUS — Earn Daily</title>
+<title>RIPPLE — Earn Daily</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
@@ -938,7 +938,7 @@ body {
   <div class="onboard-box">
     <div class="onboard-logo">
       <div class="ob-logo-icon"><i class="fa-solid fa-hexagon-nodes"></i></div>
-      <div class="ob-logo-text">NΞXUS</div>
+      <div class="ob-logo-text">RIPPLE</div>
     </div>
     <div class="ob-steps" id="obSteps">
       <div class="ob-step active"></div>
@@ -948,7 +948,7 @@ body {
 
     <!-- Step 1 -->
     <div id="obStep1">
-      <div class="ob-title">Welcome to<br>NΞXUS</div>
+      <div class="ob-title">Welcome to<br>RIPPLE</div>
       <p class="ob-sub">Earn <strong style="color:var(--blue2)">NXS tokens</strong> every day — just by logging in, completing tasks, and referring friends. Your first reward is waiting.</p>
       <div class="m-input-group">
         <div class="m-lbl">Your Name</div>
@@ -993,7 +993,7 @@ body {
         <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.04em;background:linear-gradient(90deg,var(--blue2),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">+500 NXS</div>
         <div style="font-size:12px;color:var(--text2);margin-top:4px;">Credited to your account</div>
       </div>
-      <button class="btn-primary" onclick="launchApp()"><i class="fa-solid fa-rocket"></i> Enter NΞXUS</button>
+      <button class="btn-primary" onclick="launchApp()"><i class="fa-solid fa-rocket"></i> Enter RIPPLE</button>
     </div>
   </div>
 </div>
@@ -1005,7 +1005,7 @@ body {
   <aside class="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-icon"><i class="fa-solid fa-hexagon-nodes"></i></div>
-      <div class="sb-logo-text">NΞXUS</div>
+      <div class="sb-logo-text">RIPPLE</div>
     </div>
 
     <div class="sb-user" onclick="navigate('profile')">
@@ -1421,7 +1421,7 @@ const STATE = {
     { name: 'Priya S.', joined: 'Mar 9', tier: 'charged', earned: 40, status: 'active', color: 'url(#avGrad3)' },
   ],
   tasks: [
-    { label: 'Follow NΞXUS on Twitter', reward: 100, done: false, icon: 'fa-brands fa-x-twitter', cat: 'b' },
+    { label: 'Follow RIPPLE on Twitter', reward: 100, done: false, icon: 'fa-brands fa-x-twitter', cat: 'b' },
     { label: 'Join our Discord server', reward: 150, done: false, icon: 'fa-brands fa-discord', cat: 'i' },
     { label: 'Share your referral code', reward: 75, done: false, icon: 'fa-solid fa-share-nodes', cat: 'p' },
     { label: 'Complete your profile', reward: 200, done: true, icon: 'fa-solid fa-circle-user', cat: 'b' },
@@ -1588,7 +1588,7 @@ function navigate(page) {
   document.getElementById('page-' + page).classList.add('active');
   const navEl = document.getElementById('nav-' + page);
   if (navEl) navEl.classList.add('active');
-  const [title, sub] = PAGE_TITLES[page] || ['NΞXUS', ''];
+  const [title, sub] = PAGE_TITLES[page] || ['RIPPLE', ''];
   document.getElementById('topbarTitle').textContent = title;
   document.getElementById('topbarSub').textContent = sub;
   if (page === 'referrals') document.getElementById('refBadge').style.display = 'none';
@@ -1784,7 +1784,7 @@ function renderEarnPage() {
     { icon: 'fa-user-group', cat: 'pink', title: 'Refer Friends', desc: 'Earn 10% of every reward your referrals collect. Unlimited and permanent.', reward: '10% forever' },
     { icon: 'fa-list-check', cat: 'indigo', title: 'Complete Tasks', desc: 'Daily missions drop fresh NXS. Social tasks, on-chain actions, and more.', reward: '+20–500 NXS/task' },
     { icon: 'fa-fire-flame-curved', cat: 'blue', title: 'Streak Milestones', desc: 'Hit 7, 14, 30, and 100-day streaks for massive one-time drops.', reward: 'Up to +5,000 NXS' },
-    { icon: 'fa-diamond', cat: 'indigo', title: 'Stake Your NFTs', desc: 'Hold and stake earned NFTs inside NΞXUS for passive daily income.', reward: '+200–2,000 NXS/day' },
+    { icon: 'fa-diamond', cat: 'indigo', title: 'Stake Your NFTs', desc: 'Hold and stake earned NFTs inside RIPPLE for passive daily income.', reward: '+200–2,000 NXS/day' },
     { icon: 'fa-bolt-lightning', cat: 'pink', title: 'Flash Events', desc: '24-hour surprise events drop massive reward pools. Notifications keep you in.', reward: 'Up to +50,000 NXS' },
   ];
   em.innerHTML = methods.map(m => `
