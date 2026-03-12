@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Grass Network Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500&family=Karla:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root{
+  --void:    #03071e;
+  --deep:    #06091f;
+  --navy:    #090e2a;
+  --panel:   #0d1236;
+  --card:    #111742;
+  --rim:     rgba(80,130,255,.12);
+  --rim2:    rgba(236,72,153,.09);
+
+  --blue:    #3b82f6;
+  --blue2:   #60a5fa;
+  --blue3:   #93c5fd;
+  --indigo:  #6366f1;
+  --elec:    #4f7eff;
+
+  --pink:    #ec4899;
+  --pink2:   #f472b6;
+
+  --text:    #eef2ff;
+  --text2:   #8ea3cc;
+  --text3:   #3d4f7a;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Karla',sans-serif;
+  background:var(--void);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:none;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none;}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:10px;height:10px;border-radius:50%;
+  background:var(--pink);pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);mix-blend-mode:screen;transition:transform .08s;}
+#cur-r{position:fixed;width:34px;height:34px;border-radius:50%;
+  border:1.5px solid rgba(99,102,241,.55);pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);transition:all .14s ease;}
+
+/* ── BG CANVAS ── */
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;}
+
+/* ── GRAIN ── */
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:.45;}
+
+.wrap{position:relative;z-index:2;}
+
+/* ══ NAV ══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 64px;height:72px;
+  background:rgba(3,7,30,.88);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(59,130,246,.08);
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:none;}
+.logo-icon{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;box-shadow:0 0 20px rgba(59,130,246,.35);
+}
+.logo-name{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.1em;
+  background:linear-gradient(120deg,var(--blue2),var(--pink2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-links{display:flex;gap:40px;}
+.nav-links a{
+  font-family:'Karla',sans-serif;font-size:15px;font-weight:500;
+  color:var(--text2);transition:color .2s;cursor:none;
+}
+.nav-links a:hover{color:var(--text);}
+.nav-links a.active{color:var(--text);}
+.nav-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Karla',sans-serif;font-size:14px;font-weight:700;letter-spacing:.02em;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  color:#fff;border:none;padding:11px 26px;border-radius:6px;cursor:none;
+  box-shadow:0 0 22px rgba(59,130,246,.3);transition:all .22s;
+}
+.nav-cta:hover{box-shadow:0 0 36px rgba(59,130,246,.5);transform:translateY(-1px);}
+
+/* ══ PAGE LAYOUT ══ */
+.page{
+  display:flex;min-height:100vh;padding-top:72px;
+}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:260px;flex-shrink:0;
+  position:sticky;top:72px;height:calc(100vh - 72px);
+  overflow-y:auto;overflow-x:hidden;
+  padding:36px 0 40px;
+  border-right:1px solid var(--rim);
+  background:rgba(6,9,31,.7);
+  backdrop-filter:blur(12px);
+}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-track{background:transparent;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--rim);border-radius:2px;}
+
+.sb-section{margin-bottom:8px;}
+.sb-section-title{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:.24em;text-transform:uppercase;
+  color:var(--text3);padding:10px 24px 8px;
+}
+.sb-link{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 24px;font-size:14px;font-weight:400;
+  color:var(--text2);transition:all .15s;
+  border-left:2px solid transparent;cursor:none;
+}
+.sb-link:hover{color:var(--text);background:rgba(59,130,246,.05);}
+.sb-link.active{
+  color:var(--blue2);background:rgba(59,130,246,.06);
+  border-left-color:var(--blue2);
+}
+.sb-link i{font-size:12px;opacity:.6;}
+
+/* ══ MAIN CONTENT ══ */
+.main{flex:1;padding:64px 80px 120px;max-width:860px;}
+
+/* ══ BREADCRUMB ══ */
+.breadcrumb{
+  display:flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:40px;
+}
+.breadcrumb a{color:var(--text3);transition:color .15s;cursor:none;}
+.breadcrumb a:hover{color:var(--text2);}
+.breadcrumb span{color:var(--text2);}
+.breadcrumb i{font-size:8px;}
+
+/* ══ PAGE HEADER ══ */
+.page-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--pink2);
+  border:1px solid rgba(236,72,153,.22);padding:7px 16px;border-radius:2px;
+  background:rgba(236,72,153,.05);margin-bottom:24px;
+  animation:fadeUp .7s .1s both;
+}
+.eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--pink);
+  animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.12;}}
+
+.page-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(52px,6vw,84px);
+  letter-spacing:.03em;line-height:.92;
+  margin-bottom:20px;
+  animation:titleIn .85s cubic-bezier(.22,.68,0,1.2) both;
+}
+.page-title .grad{
+  background:linear-gradient(120deg,var(--blue2),var(--pink2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+@keyframes titleIn{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:none;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+
+.page-sub{
+  font-size:17px;font-weight:300;color:var(--text2);
+  max-width:600px;line-height:1.85;margin-bottom:56px;
+  animation:fadeUp .8s .25s both;
+}
+.page-sub strong{color:var(--text);font-weight:600;}
+
+/* ══ SEARCH BAR ══ */
+.faq-search{
+  position:relative;margin-bottom:56px;
+  animation:fadeUp .8s .35s both;
+}
+.faq-search input{
+  width:100%;padding:16px 20px 16px 50px;
+  background:var(--panel);border:1px solid var(--rim);
+  border-radius:10px;color:var(--text);
+  font-family:'Karla',sans-serif;font-size:15px;
+  outline:none;transition:all .2s;cursor:none;
+}
+.faq-search input::placeholder{color:var(--text3);}
+.faq-search input:focus{border-color:rgba(59,130,246,.35);
+  box-shadow:0 0 0 3px rgba(59,130,246,.08);}
+.faq-search i{
+  position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  color:var(--text3);font-size:14px;pointer-events:none;
+}
+
+/* ══ FAQ CATEGORY ══ */
+.faq-cat{margin-bottom:56px;animation:fadeUp .7s both;}
+.faq-cat:nth-child(1){animation-delay:.1s;}
+.faq-cat:nth-child(2){animation-delay:.2s;}
+.faq-cat:nth-child(3){animation-delay:.3s;}
+.faq-cat:nth-child(4){animation-delay:.4s;}
+.faq-cat:nth-child(5){animation-delay:.5s;}
+
+.cat-header{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:24px;padding-bottom:18px;
+  border-bottom:1px solid var(--rim);
+}
+.cat-ico{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;border:1px solid;flex-shrink:0;
+}
+.cat-ico.b{background:rgba(59,130,246,.09);border-color:rgba(59,130,246,.18);color:var(--blue2);}
+.cat-ico.p{background:rgba(236,72,153,.09);border-color:rgba(236,72,153,.15);color:var(--pink2);}
+.cat-ico.i{background:rgba(99,102,241,.09);border-color:rgba(99,102,241,.15);color:#a5b4fc;}
+.cat-ico.g{background:rgba(52,211,153,.09);border-color:rgba(52,211,153,.15);color:#6ee7b7;}
+
+.cat-title{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;
+  color:var(--text);
+}
+.cat-count{
+  font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text3);
+  background:rgba(255,255,255,.04);border:1px solid var(--rim);
+  padding:4px 10px;border-radius:20px;
+}
+
+/* ══ FAQ ITEM ══ */
+.faq-item{
+  border:1px solid var(--rim);border-radius:12px;
+  margin-bottom:10px;overflow:hidden;
+  background:var(--panel);
+  transition:border-color .2s,background .2s;
+}
+.faq-item:hover{border-color:rgba(59,130,246,.2);}
+.faq-item.open{
+  border-color:rgba(59,130,246,.25);
+  background:var(--card);
+}
+
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;padding:22px 26px;cursor:none;
+}
+.faq-q-text{
+  font-size:15px;font-weight:600;color:var(--text);
+  line-height:1.5;flex:1;
+}
+.faq-toggle{
+  width:28px;height:28px;border-radius:7px;flex-shrink:0;
+  border:1px solid var(--rim);background:rgba(255,255,255,.04);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--text3);
+  transition:all .25s cubic-bezier(.22,.68,0,1.2);
+}
+.faq-item.open .faq-toggle{
+  background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.25);
+  color:var(--blue2);transform:rotate(45deg);
+}
+
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .38s cubic-bezier(.4,0,.2,1);
+}
+.faq-item.open .faq-a{max-height:600px;}
+.faq-a-inner{
+  padding:0 26px 24px;
+  font-size:14px;font-weight:300;color:var(--text2);
+  line-height:1.85;
+  border-top:1px solid var(--rim);
+  padding-top:18px;
+}
+.faq-a-inner strong{color:var(--text);font-weight:600;}
+.faq-a-inner a{color:var(--blue2);border-bottom:1px solid rgba(96,165,250,.3);
+  transition:border-color .15s;}
+.faq-a-inner a:hover{border-color:var(--blue2);}
+.faq-a-inner .tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;
+  background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);
+  color:var(--blue2);padding:4px 10px;border-radius:3px;
+  margin-top:12px;margin-right:8px;
+}
+.faq-a-inner .tag.pk{
+  background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.12);color:var(--pink2);
+}
+
+/* ══ CALLOUT ══ */
+.callout{
+  display:flex;align-items:flex-start;gap:14px;
+  background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.16);
+  border-radius:10px;padding:18px 20px;margin-bottom:48px;
+}
+.callout.warn{
+  background:rgba(236,72,153,.05);border-color:rgba(236,72,153,.14);
+}
+.callout-ico{font-size:16px;flex-shrink:0;margin-top:1px;}
+.callout-ico.b{color:var(--blue2);}
+.callout-ico.p{color:var(--pink2);}
+.callout-text{font-size:14px;font-weight:300;color:var(--text2);line-height:1.75;}
+.callout-text strong{color:var(--text);font-weight:600;}
+
+/* ══ STAT STRIP ══ */
+.stat-strip{
+  display:flex;gap:0;
+  border:1px solid var(--rim);border-radius:14px;overflow:hidden;
+  margin-bottom:56px;background:var(--rim);
+}
+.stat-cell{
+  flex:1;background:var(--panel);padding:28px 24px;text-align:center;
+  border-right:1px solid var(--rim);
+}
+.stat-cell:last-child{border-right:none;}
+.stat-val{
+  font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.04em;line-height:1;
+  background:linear-gradient(120deg,var(--blue2),var(--pink2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;
+}
+.stat-lbl{
+  font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text3);
+}
+
+/* ══ FOOTER ══ */
+footer{
+  position:relative;z-index:2;
+  background:rgba(6,9,31,.8);
+  border-top:1px solid var(--rim);
+  padding:40px 64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.f-copy{font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--text3);}
+.f-socials{display:flex;gap:14px;}
+.f-soc{
+  width:36px;height:36px;border-radius:8px;
+  border:1px solid var(--rim);background:rgba(255,255,255,.03);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--text3);
+  transition:all .18s;cursor:none;
+}
+.f-soc:hover{border-color:rgba(59,130,246,.3);color:var(--blue2);background:rgba(59,130,246,.08);}
+
+/* ══ NO RESULTS ══ */
+.no-results{
+  text-align:center;padding:60px 20px;display:none;
+}
+.no-results i{font-size:36px;color:var(--text3);margin-bottom:14px;display:block;}
+.no-results p{color:var(--text3);font-size:14px;}
+
+/* ══ SCROLL REVEAL ══ */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s,transform .55s;}
+.reveal.vis{opacity:1;transform:none;}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:900px){
+  nav{padding:0 24px;}
+  .sidebar{display:none;}
+  .main{padding:40px 24px 80px;}
+  .stat-strip{flex-direction:column;gap:0;}
+  .stat-cell{border-right:none;border-bottom:1px solid var(--rim);}
+  .stat-cell:last-child{border-bottom:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+<canvas id="bgc"></canvas>
+
+<div class="wrap">
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon"><i class="fa-solid fa-leaf" style="font-size:14px;color:#fff;"></i></div>
+    <div class="logo-name">GRASS</div>
+  </div>
+  <div class="nav-links">
+    <a href="#">Introduction</a>
+    <a href="#">Architecture</a>
+    <a href="#" class="active">FAQ</a>
+    <a href="#">How-to Guide</a>
+  </div>
+  <a href="#" class="nav-cta"><i class="fa-solid fa-download"></i> Get Grass</a>
+</nav>
+
+<!-- PAGE LAYOUT -->
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-title">Introduction</div>
+      <a href="#" class="sb-link"><i class="fa-solid fa-house"></i> Getting Started</a>
+      <a href="#" class="sb-link"><i class="fa-brands fa-pagelines"></i> What is Grass?</a>
+      <a href="#" class="sb-link active"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-coins"></i> GRASS Token</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">How-to Guide</div>
+      <a href="#" class="sb-link"><i class="fa-solid fa-download"></i> Set up Grass Node</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-chart-bar"></i> Grass Points</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">Architecture</div>
+      <a href="#" class="sb-link"><i class="fa-solid fa-diagram-project"></i> Overview</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-check-double"></i> Validator</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-route"></i> Router</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-server"></i> Grass Node</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-traffic-light"></i> Traffic Types</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-gas-pump"></i> Fee Market</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-star"></i> Node Reputation</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">FAQ Sections</div>
+      <a href="#general" class="sb-link"><i class="fa-solid fa-circle-info"></i> General</a>
+      <a href="#earning" class="sb-link"><i class="fa-solid fa-bolt"></i> Earning & Points</a>
+      <a href="#privacy" class="sb-link"><i class="fa-solid fa-shield-halved"></i> Privacy & Safety</a>
+      <a href="#account" class="sb-link"><i class="fa-solid fa-user"></i> Account & Setup</a>
+      <a href="#tokens" class="sb-link"><i class="fa-solid fa-coins"></i> Tokens & Airdrops</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">External Links</div>
+      <a href="#" class="sb-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Website</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="#" class="sb-link"><i class="fa-solid fa-rss"></i> Blog</a>
+      <a href="#" class="sb-link"><i class="fa-brands fa-x-twitter"></i> Twitter</a>
+      <a href="#" class="sb-link"><i class="fa-brands fa-discord"></i> Discord</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="#">Grass Docs</a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <a href="#">Introduction</a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <span>General Grass FAQ</span>
+    </div>
+
+    <!-- PAGE HEADER -->
+    <div class="page-eyebrow">
+      <div class="eyebrow-dot"></div>
+      General Grass FAQ
+    </div>
+    <h1 class="page-title">
+      Everything you need<br>
+      to <span class="grad">know about Grass</span>
+    </h1>
+    <p class="page-sub">
+      Your questions answered — from what Grass is and how it works, to how you earn, how your data stays safe, and how tokens are distributed.
+    </p>
+
+    <!-- SEARCH -->
+    <div class="faq-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Search questions…" oninput="filterFaq(this.value)">
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-strip reveal">
+      <div class="stat-cell">
+        <div class="stat-val">2M+</div>
+        <div class="stat-lbl">Network Users</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val">100M</div>
+        <div class="stat-lbl">Tokens Airdropped</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val">Oct 28</div>
+        <div class="stat-lbl">First Airdrop 2024</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val">0%</div>
+        <div class="stat-lbl">Personal Data Shared</div>
+      </div>
+    </div>
+
+    <!-- CALLOUT -->
+    <div class="callout reveal">
+      <i class="fa-solid fa-circle-info callout-ico b"></i>
+      <div class="callout-text">
+        <strong>New to Grass?</strong> Start with the <a href="#">Getting Started</a> guide for a step-by-step walkthrough, then come back here for detailed answers to any questions you might have.
+      </div>
+    </div>
+
+    <!-- FAQ SECTIONS -->
+    <div id="faqContainer">
+
+    <!-- ── GENERAL ── -->
+    <div class="faq-cat reveal" id="general">
+      <div class="cat-header">
+        <div class="cat-ico b"><i class="fa-solid fa-circle-info"></i></div>
+        <div class="cat-title">General</div>
+        <div class="cat-count">7 questions</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">What is Grass?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Grass is a network of over <strong>2 million people</strong> who are rewarded for helping AI developers access the internet. Its goal is to prevent the concentration of AI by allowing ordinary people to play a part and share in the benefits of its growth.<br><br>
+            Since everyone already pays for internet, why not put your idle connection to work? Grass exists to build a fairer internet where you can directly benefit from large corporations using your unused internet bandwidth.
+            <div><span class="tag"><i class="fa-solid fa-leaf"></i> Decentralized</span><span class="tag pk"><i class="fa-solid fa-bolt"></i> Earn Rewards</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How does Grass actually work?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Training an AI model takes a huge amount of web data, which can be obtained from public websites. When you install a Grass node, the network will occasionally route web requests using your internet connection — think of it as your computer checking a random website every once in a while.<br><br>
+            Grass nodes view these public websites and compile <strong>structured datasets</strong> from their contents, which are then sold to AI labs for use in the training process. None of this will be visible to you and it will not affect your internet experience at all.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Who builds Grass?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <strong>Wynd Labs</strong> is a core contributor to Grass. The Grass Foundation oversees the long-term direction of the network, token distribution, and governance, while Wynd Labs handles core protocol development and infrastructure.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Who uses the bandwidth I share?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Only <strong>verified institutions</strong> use your unused internet bandwidth. Your bandwidth may be used for tasks like checking local prices, viewing regional advertisements, or conducting academic research — all entirely safe, public-web activities.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Is Grass legal?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Yes, it is <strong>entirely legal and entirely safe</strong>. The network is used for scraping AI training data from publicly accessible websites only. Nothing remotely unsavory occurs when it does this. Grass is certified by industry-leading cybersecurity organizations like <strong>AppEsteem</strong>, ensuring your data and privacy are protected through world-class security standards.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Will Grass slow down my internet?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            No. Grass only uses <strong>unused bandwidth</strong> — the portion of your internet connection that would otherwise sit idle. It automatically dials things back if your network is busy, so your browsing, streaming, and gaming will never be affected.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How do I sign up?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Simply create a username, enter your email, and set a password to sign up. Once you download the app, just log in and your Grass account is up and running. Download Grass on the <strong>Chrome Web Store</strong> or the <strong>Google Play store</strong>. Yes, it's that easy — with just three clicks you can start earning.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EARNING & POINTS ── -->
+    <div class="faq-cat reveal" id="earning">
+      <div class="cat-header">
+        <div class="cat-ico p"><i class="fa-solid fa-bolt"></i></div>
+        <div class="cat-title">Earning & Points</div>
+        <div class="cat-count">6 questions</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">What are Grass Points?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Grass Points track your contributions to the Grass Network. They come in two forms:<br><br>
+            <strong>Uptime Points</strong> — earned for staying connected and bringing others into the network through referrals.<br><br>
+            <strong>Network Points</strong> — earned when your internet connection is actively used to handle traffic. Each day, a fixed pool of <strong>1,000,000 Network Points</strong> is distributed across users according to the share of bandwidth they contribute.<br><br>
+            Together, Grass Points track your participation in and contributions to the Grass Network and are one of the factors used to calculate the Grass Tokens you may receive in future distributions.
+            <div><span class="tag"><i class="fa-solid fa-clock"></i> Uptime Points</span><span class="tag pk"><i class="fa-solid fa-wifi"></i> Network Points</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How are Network Points calculated?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Each day, <strong>1,000,000 Network Points</strong> are distributed proportionally based on bandwidth contributed. For example: if the Grass Network routes 100,000 GB of web traffic in a single day across 500,000 active users, and your device contributed 10 GB, you provided 0.01% of the day's bandwidth — earning approximately <strong>100 Network Points</strong>.<br><br>
+            Factors that influence how often your bandwidth is used include your geographic location, connection stability, and whether your connection has been recently used in prior tasks.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How does the referral program work?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            When you join Grass, you'll get a unique referral link. Share it with others and earn bonus Uptime Points based on a tiered structure:<br><br>
+            <strong>Primary Referrals:</strong> Your Uptime Points increase by <strong>20%</strong> of your referred user's Uptime Points indefinitely.<br><br>
+            <strong>Secondary Referrals:</strong> When someone you invited shares their link, you earn an additional <strong>10%</strong> of that person's Uptime Points.<br><br>
+            <strong>Tertiary Referrals:</strong> The third level earns you <strong>5%</strong> of those users' Uptime Points.<br><br>
+            You also receive <strong>2,500 bonus points</strong> when your referral hits 100 hours of uptime, and new users who join via an invite link receive <strong>5,000 bonus points</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Can I use Grass on multiple devices?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Yes, you can download Grass on multiple devices. However, if they're all connected to <strong>the same Wi-Fi network</strong>, the 24 hours of daily uptime will be split between all accounts on that network rather than each device receiving full uptime credit.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">What factors affect my earnings?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Several factors influence how much bandwidth traffic is routed through your connection:<br><br>
+            • <strong>Geographic location</strong> — certain regions handle more traffic depending on where web data requests originate.<br>
+            • <strong>Connection stability</strong> — the strength and consistency of your connection affects whether it gets selected.<br>
+            • <strong>Prior usage</strong> — if your connection was recently used, the network may prioritize other users' connections to maintain operational reliability.<br><br>
+            You don't need to change anything to start earning — simply keeping your device connected and online maximizes your share.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Are there any restrictions on using Grass?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            A few simple rules apply:<br><br>
+            • You must be <strong>18 or older</strong> to use Grass.<br>
+            • Each user is permitted <strong>only one account</strong>. You can add multiple devices under your account, but attempting to game the referral program via multiple accounts risks a ban.<br>
+            • Grass <strong>cannot be used with a VPN enabled</strong>.<br>
+            • If two or more accounts share the same Wi-Fi network, daily uptime earnings are split between them.<br><br>
+            That's it — if you're on a residential network, you're good to go!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PRIVACY & SAFETY ── -->
+    <div class="faq-cat reveal" id="privacy">
+      <div class="cat-header">
+        <div class="cat-ico i"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="cat-title">Privacy & Safety</div>
+        <div class="cat-count">3 questions</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Does Grass access my personal data?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <strong>No.</strong> Grass does not access or utilize your personal data in any way. The network is used to access <strong>public websites only</strong> — it has nothing to do with the data on your computer. We never access or use your browsing history, and we do not access or sell your personal information.<br><br>
+            Your personal information is never accessible through the Grass network.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How does Grass protect my security?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Grass is certified by industry-leading cybersecurity organizations like <strong>AppEsteem</strong>, ensuring your data and privacy are protected through world-class security standards. All traffic routed through network relays is <strong>encrypted and metered</strong> for security and performance.<br><br>
+            Grass only allows verified institutions to use your unused internet bandwidth for safe activities such as price comparison and academic research.
+            <div><span class="tag"><i class="fa-solid fa-lock"></i> Encrypted Traffic</span><span class="tag"><i class="fa-solid fa-certificate"></i> AppEsteem Certified</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Is my home network isolated from Grass traffic?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Yes. Grass only handles <strong>encrypted Grass traffic</strong> and is physically isolated from your personal devices, files, and browsing. No data from your home network is ever accessed or stored. The Grass node only routes public web traffic and cannot see or interact with anything on your local network.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ACCOUNT & SETUP ── -->
+    <div class="faq-cat reveal" id="account">
+      <div class="cat-header">
+        <div class="cat-ico g"><i class="fa-solid fa-user"></i></div>
+        <div class="cat-title">Account & Setup</div>
+        <div class="cat-count">3 questions</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How do I get started with Grass?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Getting started takes just three clicks:<br><br>
+            1. <strong>Download</strong> the Grass app from the Chrome Web Store or Google Play store.<br>
+            2. <strong>Sign up</strong> — create a username, enter your email, and set a password.<br>
+            3. <strong>Log in</strong> and your Grass account is live and earning.<br><br>
+            Grass handles everything automatically after that. You can pause sharing at any time.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Can I have multiple accounts?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <strong>No.</strong> Each user is permitted only one Grass account. You are able to add more than one device under your single account — for example, a computer and a mobile device. However, attempting to game the referral program by referring yourself under multiple accounts <strong>risks a permanent ban</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Can I use Grass while using a VPN?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <strong>No.</strong> Grass cannot be used with a VPN enabled. The network relies on residential IP addresses to route authentic geographic web requests for AI data collection. VPN addresses are datacenter IPs which are not eligible for the Grass network.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TOKENS & AIRDROPS ── -->
+    <div class="faq-cat reveal" id="tokens">
+      <div class="cat-header">
+        <div class="cat-ico b"><i class="fa-solid fa-coins"></i></div>
+        <div class="cat-title">Tokens & Airdrops</div>
+        <div class="cat-count">4 questions</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">What are Grass Tokens?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Grass Tokens are the rewards you earn for sharing your unused internet bandwidth with the network. <strong>GRASS is the native token of the Grass Network.</strong><br><br>
+            They reflect your participation and contribution to building the network, giving you a way to <strong>own a part of the infrastructure you help power</strong>. GRASS is also staked to routers to ensure they remain in compliance with network protocols.
+            <div><span class="tag pk"><i class="fa-solid fa-coins"></i> Native Token</span><span class="tag"><i class="fa-solid fa-handshake"></i> Governance</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">When are Grass Tokens distributed?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Grass Tokens are rewarded via <strong>airdrop</strong> at intervals determined by the Grass Foundation. The first airdrop occurred on <strong>October 28, 2024</strong>, during which <strong>100,000,000 tokens</strong> were airdropped to more than <strong>2,000,000 Grass users</strong>.<br><br>
+            Users who were eligible for the initial airdrop but did not submit their public wallet address before the deadline will be given the opportunity to participate in future airdrops.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">What's the relationship between Grass Points and Grass Tokens?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Grass Points track your contributions to the network over time — both your uptime availability and actual bandwidth usage. They are <strong>one of the factors</strong> used to calculate the Grass Tokens you may receive in future distributions.<br><br>
+            Think of Points as your contribution ledger, and Tokens as the reward that flows from that ledger at airdrop intervals. Maximizing your Points by staying connected and referring others directly improves your Token eligibility.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <div class="faq-q-text">I missed the first airdrop deadline — what now?</div>
+          <div class="faq-toggle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Users who were eligible to receive Grass Tokens in the initial airdrop but did not participate — either because they didn't submit their public wallet address before the deadline — will be given <strong>the opportunity to participate in future airdrops</strong>. Keep your node running and your account active to remain eligible for upcoming distributions.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /faqContainer -->
+
+    <!-- NO RESULTS -->
+    <div class="no-results" id="noResults">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <p>No questions match your search. Try different keywords.</p>
+    </div>
+
+    <!-- FOOTER CALLOUT -->
+    <div class="callout warn reveal" style="margin-top:0;">
+      <i class="fa-solid fa-lightbulb callout-ico p"></i>
+      <div class="callout-text">
+        <strong>Still have questions?</strong> Join the <a href="#">Grass Discord</a> community or follow <a href="#">@getgrass_io</a> on Twitter for the latest updates and support.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p class="f-copy">© 2024 Grass Foundation. Powered by GitBook.</p>
+  <div class="f-socials">
+    <a class="f-soc" href="#"><i class="fa-brands fa-x-twitter"></i></a>
+    <a class="f-soc" href="#"><i class="fa-brands fa-discord"></i></a>
+    <a class="f-soc" href="#"><i class="fa-brands fa-telegram"></i></a>
+    <a class="f-soc" href="#"><i class="fa-brands fa-github"></i></a>
+  </div>
+</footer>
+
+</div><!-- /wrap -->
+
+<script>
+/* ── CURSOR ── */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function anim(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+document.querySelectorAll('a,button,.faq-q,.sb-link,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.8)';ring.style.transform='translate(-50%,-50%) scale(1.5)';ring.style.borderColor='rgba(236,72,153,.6)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(99,102,241,.55)';});
+});
+
+/* ── BG CANVAS ── */
+const bc=document.getElementById('bgc'),bx=bc.getContext('2d');
+let BW,BH,pts=[];
+function rsz(){BW=bc.width=window.innerWidth;BH=bc.height=window.innerHeight;}
+rsz();window.addEventListener('resize',rsz);
+class Pt{
+  constructor(){this.init();}
+  init(){this.x=Math.random()*BW;this.y=Math.random()*BH;this.vx=(Math.random()-.5)*.26;this.vy=(Math.random()-.5)*.26;this.r=Math.random()*1.5+.3;const t=Math.random();this.c=t<.55?`rgba(59,130,246,${.1+Math.random()*.42})`:t<.82?`rgba(99,102,241,${.08+Math.random()*.35})`:`rgba(236,72,153,${.06+Math.random()*.26})`;this.life=0;this.ml=Math.random()*500+200;}
+  tick(){this.x+=this.vx;this.y+=this.vy;this.life++;if(this.x<0||this.x>BW||this.y<0||this.y>BH||this.life>this.ml)this.init();}
+  draw(){bx.beginPath();bx.arc(this.x,this.y,this.r,0,Math.PI*2);bx.fillStyle=this.c;bx.fill();}
+}
+for(let i=0;i<180;i++)pts.push(new Pt());
+(function bgLoop(){bx.clearRect(0,0,BW,BH);for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<88){bx.beginPath();bx.moveTo(pts[i].x,pts[i].y);bx.lineTo(pts[j].x,pts[j].y);bx.strokeStyle=`rgba(59,130,246,${(.88-d/88)*.065})`;bx.lineWidth=.5;bx.stroke();}}}pts.forEach(p=>{p.tick();p.draw();});requestAnimationFrame(bgLoop);})();
+
+/* ── SCROLL REVEAL ── */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ── FAQ TOGGLE ── */
+function toggleFaq(btn){
+  const item=btn.parentElement;
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}
+
+/* ── SEARCH FILTER ── */
+function filterFaq(query){
+  const q=query.toLowerCase().trim();
+  let anyVisible=false;
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const text=item.textContent.toLowerCase();
+    const show=!q||text.includes(q);
+    item.style.display=show?'':'none';
+    if(show)anyVisible=true;
+  });
+  // show/hide categories based on whether any children are visible
+  document.querySelectorAll('.faq-cat').forEach(cat=>{
+    const visItems=[...cat.querySelectorAll('.faq-item')].some(i=>i.style.display!=='none');
+    cat.style.display=visItems?'':'none';
+  });
+  document.getElementById('noResults').style.display=anyVisible?'none':'block';
+}
+
+/* ── SIDEBAR ACTIVE HIGHLIGHT ON SCROLL ── */
+const sections=document.querySelectorAll('.faq-cat[id]');
+const sbLinks=document.querySelectorAll('.sidebar .sb-link');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      sbLinks.forEach(l=>l.classList.remove('active'));
+      const match=document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+      if(match){match.classList.add('active');}
+    }
+  });
+},{threshold:.35});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
